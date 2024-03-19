@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "781302615777",
+    "project_id": "calling-notification",
+    "storage_bucket": "calling-notification.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781302615777:android:16e4d10d0e1bf7e49af1a0",
+        "android_client_info": {
+          "package_name": "com.verifyone.verify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9a3m-4MjX52YsJyH-B1Xgu0cyzrULTpg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
