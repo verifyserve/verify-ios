@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -12,6 +13,7 @@ import '../../bloc/authBloc.dart';
 import '../../data/model/showVehicle.dart';
 import '../../data/repository/AuthRepository.dart';
 import '../../utils/constant.dart';
+import '../auth/login.dart';
 import '../widgets/appTextField.dart';
 import '../widgets/top_snackbar/top_snack_bar.dart';
 import 'add_vehicle.dart';
@@ -75,6 +77,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   ShowVehicleModel? showVehicleModel;
+
+  bool isSigningOut = false;
+
+  Future<void> backpress(id) async{
+    final responce = await http.get(Uri.parse("https://verifyserve.social/WebService3_ServiceWork.asmx/Delete_Account_by_id?Uid=$id"));
+    //final responce = await http.get(Uri.parse('https://verifyserve.social/WebService2.asmx/Add_Tenants_Documaintation?Tenant_Name=gjhgjg&Tenant_Rented_Amount=entamount&Tenant_Rented_Date=entdat&About_tenant=bout&Tenant_Number=enentnum&Tenant_Email=enentemail&Tenant_WorkProfile=nantwor&Tenant_Members=enentmember&Owner_Name=wnername&Owner_Number=umb&Owner_Email=emi&Subid=3'));
+
+    if(responce.statusCode == 200){
+      print(responce.body);
+
+      //SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    } else {
+      print('Failed Registration');
+    }
+
+  }
 
   Future<List<ShowVehicleModel>> ShowVehicleNumbers(id) async {
     final url = Uri.parse('https://verifyserve.social/WebService3_ServiceWork.asmx/Show_Multivehicle_byid?id=$id');
@@ -498,7 +517,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               crossAxisAlignment: CrossAxisAlignment.center,
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
-                                               // Icon(Iconsax.,color: Colors.pinkAccent,),
+                                                // Icon(Iconsax.,color: Colors.pinkAccent,),
                                                 Image.asset("assets/images/customer-service.png",width: 25,),
                                                 SizedBox(width: 8,),
                                                 Text('Help & Support',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500,color: Colors.black,fontFamily: 'Poppins',letterSpacing: 0),),
@@ -507,6 +526,70 @@ class _ProfilePageState extends State<ProfilePage> {
                                               ],
                                             ),
                                           ),
+                                        ),
+                                        SizedBox(height: 15,),
+                                        Divider(
+                                          height: 1,
+                                          color: Colors.black,
+                                        ),
+                                        SizedBox(height: 15,),
+                                        ValueListenableBuilder(
+                                            valueListenable: id,
+                                            builder: (context, String _id,__) {
+                                            return InkWell(
+                                              onTap: (){
+                                                showDialog<bool>(
+                                                  context: context,
+                                                  builder: (context) => AlertDialog(
+                                                    title: Text('Delete Account'),
+                                                    content: Text('Do you want to delete this account?'),
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                                    actions: <Widget>[
+                                                      ElevatedButton(
+                                                        onPressed: () => Navigator.of(context).pop(false),
+                                                        child: Text('No'),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          backpress(_id);
+
+                                                          scaffoldKey.currentState?.openEndDrawer();
+                                                          setState(() {
+                                                            isSigningOut = true;
+                                                          });
+                                                          await Future.delayed(Duration(seconds: 1));
+                                                          await FirebaseMessaging.instance.deleteToken();
+                                                          SharedPreferences pref = await SharedPreferences.getInstance();
+                                                          pref.clear();
+                                                          Navigator.of(context).pushNamedAndRemoveUntil(LoginPage.route, (route) => false);
+                                                          setState(() {
+                                                            isSigningOut = false;
+                                                          });
+
+                                                },
+                                                        child: Text('Yes'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ) ?? false;
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.only(left: 15,right: 18),
+                                                child: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    // Icon(Iconsax.,color: Colors.pinkAccent,),
+                                                    Image.asset("assets/images/deleteaccount.png",width: 25,),
+                                                    SizedBox(width: 8,),
+                                                    Text('Delete Your Account',style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500,color: Colors.black,fontFamily: 'Poppins',letterSpacing: 0),),
+                                                    Spacer(),
+                                                    Icon(PhosphorIcons.caret_right,size: 20,),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }
                                         ),
                                         SizedBox(height: 15,),
                                         Divider(

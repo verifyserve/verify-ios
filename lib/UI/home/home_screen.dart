@@ -75,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   late SharedPreferences preferences;
+  ValueNotifier<String>id=ValueNotifier("");
   ValueNotifier<String>name=ValueNotifier("");
   ValueNotifier<String>email=ValueNotifier("");
   ValueNotifier<String>number=ValueNotifier("");
@@ -176,6 +177,8 @@ class _HomeScreenState extends State<HomeScreen> {
     init();
   }
 
+
+
   init()async{
 
     // 1. This method call when app in terminated state and you get a notification
@@ -221,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
     notificationService.requestNotificationPermission();
 
     preferences=await SharedPreferences.getInstance();
+    id.value=preferences.getString("id")??'';
     name.value=preferences.getString("name")??'';
     email.value=preferences.getString("email")??'';
     number.value = preferences.getString("phone") ?? '';
@@ -252,6 +256,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   bool isSigningOut = false;
+
+  Future<void> backpress(id) async{
+    final responce = await http.get(Uri.parse("https://verifyserve.social/WebService3_ServiceWork.asmx/Delete_Account_by_id?Uid=$id"));
+    //final responce = await http.get(Uri.parse('https://verifyserve.social/WebService2.asmx/Add_Tenants_Documaintation?Tenant_Name=gjhgjg&Tenant_Rented_Amount=entamount&Tenant_Rented_Date=entdat&About_tenant=bout&Tenant_Number=enentnum&Tenant_Email=enentemail&Tenant_WorkProfile=nantwor&Tenant_Members=enentmember&Owner_Name=wnername&Owner_Number=umb&Owner_Email=emi&Subid=3'));
+
+    if(responce.statusCode == 200){
+      print(responce.body);
+
+      //SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    } else {
+      print('Failed Registration');
+    }
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -535,11 +556,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+
               ),
             ),
             const SizedBox(
               height: 20,
             ),
+
             Row(
               children: [
                 SizedBox(
@@ -683,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           return GridView.count(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            crossAxisCount: 3,
+                            crossAxisCount: 2,
                             crossAxisSpacing: 10.0,
                             mainAxisSpacing: 10.0,
                             children:

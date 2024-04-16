@@ -5,7 +5,6 @@ import 'package:verify/data/model/jobImageSlider.dart';
 import 'package:verify/data/model/jobs.dart';
 import 'package:verify/data/repository/consultantRepository.dart';
 import 'package:verify/utils/message_handler.dart';
-
 import '../data/repository/jobsRepository.dart';
 
 class JobsBloc extends Bloc {

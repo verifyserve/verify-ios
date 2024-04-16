@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '781302615777',
     projectId: 'calling-notification',
     storageBucket: 'calling-notification.appspot.com',
-    iosBundleId: 'com.verifyone.verify',
+    iosBundleId: 'com.verifyn.verify',
   );
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +19,8 @@ import 'package:verify/data/repository/RealEstateRepository.dart';
 import 'package:verify/main.dart';
 import 'package:verify/utils/constant.dart';
 import 'package:verify/utils/message_handler.dart';
-
 import '../../data/model/realestateModel.dart';
 import 'package:http/http.dart' as http;
-
 import '../vehicle/parking_notification.dart';
 
 class RealEstateHomepage extends StatefulWidget {
