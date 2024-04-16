@@ -707,8 +707,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             crossAxisCount: 2,
-                            crossAxisSpacing: 10.0,
-                            mainAxisSpacing: 10.0,
+                            crossAxisSpacing: 0,
+                            mainAxisSpacing: 0,
                             children:
                                 List.generate(bloc.mailList.value.length, (index) {
                               return InkWell(
@@ -730,7 +730,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               //const NotificationPage()),
-                                          ComingSoon12()),
+                                          //ComingSoon12()),
+                                          RealEstateHomepage()),
                                     );
                                   }
                                   if (index == 2) {
@@ -738,14 +739,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const RealEstateHomepage()),
+                                              //const RealEstateHomepage()),
+                                          SendParkingAlert(),),
                                     );
                                   }
                                   if (index == 3) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => const VehicleHome()),
+                                          builder: (context) =>
+                                          //const VehicleHome()),
+                                          const ServicesScreen()),
                                     );
                                   }
                                   if (index == 4) {
@@ -823,8 +827,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: CachedNetworkImage(
                                           imageUrl:
                                               "http://www.verifyserve.social/upload/${bloc.mailList.value[index].vimage}",
-                                          height: 60.h,
-                                          width: 110.w,
+                                          height: 100.h,
+                                          width: 170.w,
                                           fit: BoxFit.cover,
                                           placeholder: (context, url) => Image.asset(
                                             AppImages.loading,
