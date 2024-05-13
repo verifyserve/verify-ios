@@ -233,11 +233,15 @@ class _RegisterState extends State<Register> {
               SizedBox(height: 2.0),
               Container(
                 margin: const EdgeInsets.only(left: 25, right: 20),
-                child: Text(
-                  _isEmailValid ? 'Email is valid' : '',
-                  style: TextStyle(fontSize: 13,
-                    color: _isEmailValid ? Colors.green : Colors.red,
-                  ),),
+                child: Column(
+                  children: [
+                    Text(
+                      _isEmailValid ? 'Email is valid' : 'Email is invalid',
+                      style: TextStyle(fontSize: 13,
+                        color: _isEmailValid ? Colors.green : Colors.red,
+                      ),),
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 0,
@@ -318,7 +322,7 @@ class _RegisterState extends State<Register> {
               border: Border.all(width: 1, color: Colors.red.withOpacity(0.8)),
             ),
             margin: const EdgeInsets.only(left: 20, right: 20),
-            child: Text('Password must contain at least 8 characters, 2 uppercase, 3 lowercase, 2 digits & special character.', style: TextStyle(
+            child: Text('Password must contain at least 8 characters, 1 uppercase, 2 lowercase, 2 digits & special character.', style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.grey[500],
@@ -363,14 +367,11 @@ class _RegisterState extends State<Register> {
                             fontSize: 16
                         ),
                         inputFormatters: [
-                        LengthLimitingTextInputFormatter(8),
+                        LengthLimitingTextInputFormatter(16),
                         ],
                         onChanged: (password) {
                           setState(() {
                             _isPasswordValid = _validatePassword(password);
-
-
-
                           });
                         },
 

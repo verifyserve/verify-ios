@@ -210,7 +210,7 @@ class _AddVehicleState extends State<AddVehicle> {
                     //FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
                    // FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
                   ],
-                  validator: (value) {
+                  /*validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Vehicle number is required';
                     }
@@ -221,15 +221,15 @@ class _AddVehicleState extends State<AddVehicle> {
                       return 'Enter a valid vehicle number';
                     }
                     return null;
-                  },
-                  onChanged: (value) {
+                  },*/
+                  /*onChanged: (value) {
                     // You can perform validation here and update the stream accordingly
                     // For simplicity, let's consider a basic validation using a regular expression
                     String pattern = r'^[A-Z]{2}\d{2}[A-Z]{2}\d{4}$';
                     RegExp regex = RegExp(pattern);
                     bool isValid = regex.hasMatch(value);
                     _vehicleNumberStreamController.add(isValid);
-                  },
+                  },*/
                   controller: addvehiclecontroller,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsetsDirectional.all(12),

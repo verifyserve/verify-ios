@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -155,7 +156,7 @@ class ForgetPage extends StatefulWidget {
                   border: Border.all(width: 1, color: Colors.red.withOpacity(0.8)),
                 ),
                 margin: const EdgeInsets.only(left: 20, right: 20),
-                child: Text('Password must contain at least 8 characters, 2 uppercase, 3 lowercase, 2 digits & special character.', style: TextStyle(
+                child: Text('Password must contain at least 8 characters, 1 uppercase, 2 lowercase, 2 digits & special character.', style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[400],
@@ -181,6 +182,9 @@ class ForgetPage extends StatefulWidget {
                       _isNewPasswordValid = _validatePassword(new_password);
                     });
                   },
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(16),
+                  ],
                   decoration: InputDecoration(
                       hintText: "At least 8 characters",
                       prefixIcon: Icon(
