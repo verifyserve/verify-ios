@@ -54,10 +54,10 @@ class _RegisterState extends State<Register> {
 
   //^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8}$
 
-  bool _validatePassword(String password) {
+  /*bool _validatePassword(String password) {
     RegExp passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     return passwordRegex.hasMatch(password);
-  }
+  }*/
 
   bool _validateEmail(String email) {
     RegExp emailRegex = RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
@@ -369,11 +369,11 @@ class _RegisterState extends State<Register> {
                         inputFormatters: [
                         LengthLimitingTextInputFormatter(16),
                         ],
-                        onChanged: (password) {
+                        /*onChanged: (password) {
                           setState(() {
                             _isPasswordValid = _validatePassword(password);
                           });
-                        },
+                        },*/
 
                         obscureText: visible,
                         decoration: InputDecoration(
