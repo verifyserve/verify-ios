@@ -24,24 +24,26 @@ class aaaa {
   final String Tenant_Name;
   final String Tenant_Number;
   final String Tenant_Email;
+  final String Floor;
   final String About_tenant;
   final String Tenant_Rented_Date;
   final String Tenant_Rented_Amount;
   final String Tenant_WorkProfile;
 
   aaaa(
-      {required this.id, required this.Tenant_Name, required this.Tenant_Number, required this.Tenant_Email, required this.About_tenant,
+      {required this.id, required this.Tenant_Name, required this.Tenant_Number, required this.Tenant_Email,required this.Floor, required this.About_tenant,
         required this.Tenant_Rented_Date, required this.Tenant_Rented_Amount, required this.Tenant_WorkProfile});
 
   factory aaaa.FromJson(Map<String, dynamic>json){
-    return aaaa(id: json['DTR_id'],
+    return aaaa(id: json['TUP_id'],
         Tenant_Name: json['Tenant_Name'],
         Tenant_Number: json['Tenant_Number'],
         Tenant_Email: json['Tenant_Email'],
+        Floor: json['FLoorr'],
         About_tenant: json['About_tenant'],
         Tenant_Rented_Date: json['Tenant_Rented_Date'],
         Tenant_Rented_Amount: json['Tenant_Rented_Amount'],
-        Tenant_WorkProfile: json['Tenant_WorkProfile'],
+        Tenant_WorkProfile: json['Tenant_WorkProfile']
     );
   }
 }
@@ -71,9 +73,24 @@ class aaaa {
   }
 }*/
 
+class Catid {
+  final String iid;
+  final String T_Name;
+
+  Catid(
+      {required this.iid, required this.T_Name});
+
+  factory Catid.FromJson(Map<String, dynamic>json){
+    return Catid(iid: json['tanant_document_id'],
+        T_Name: json['document_type']);
+  }
+}
+
 class details extends StatefulWidget {
   final String iidd;
-  const details({Key? key, required this.iidd}) : super(key: key);
+  final String tenant_numm;
+  final String subbb_id;
+  const details({Key? key, required this.iidd, required this.tenant_numm, required this.subbb_id}) : super(key: key);
 
   @override
   State<details> createState() => _detailsState();
@@ -145,7 +162,7 @@ class _detailsState extends State<details> {
   }
 
   Future<List<aaaa>> fetchData(id) async {
-    var url = Uri.parse('https://verifyserve.social/WebService2.asmx/Show_Tenants_Detailspage?id=$id');
+    var url = Uri.parse('https://verifyserve.social/WebService4.asmx/Show_Verify_AddTenant_Under_Property_Table?TUP_id=${id}');
     final responce = await http.get(url);
     if (responce.statusCode == 200) {
       List listresponce = json.decode(responce.body.toString());
@@ -171,8 +188,8 @@ class _detailsState extends State<details> {
   //For PDF
   TenantPdfModel? tenantPdfModel;
 
-  Future<List<TenantPdfModel>> fetchpdf(id,owner_no) async {
-    final url = Uri.parse('https://verifyserve.social/WebService3_ServiceWork.asmx/Show_Documnet_UnderTenant?Tenant_id=$id&Owner_number=$owner_no');
+  Future<List<TenantPdfModel>> fetchpdf(owner_no, Tenant_no, sub_id) async {
+    final url = Uri.parse('https://verifyserve.social/WebService4.asmx/Verification_document_by_BothNumber_Subid?own_num=${owner_no}&tenant_num=${Tenant_no}&Subid=${sub_id}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       //await Future.delayed(Duration(seconds: 1));
@@ -183,6 +200,18 @@ class _detailsState extends State<details> {
     }
   }
 
+  Future<List<Catid>> fetchData_Documen() async {
+    var url = Uri.parse("https://verifyserve.social/WebService4.asmx/showing_data_by_bulding_subid_police_verifycation_document?building_subid=122");
+    final responce = await http.get(url);
+    if (responce.statusCode == 200) {
+
+      List listresponce = json.decode(responce.body);
+      return listresponce.map((data) => Catid.FromJson(data)).toList();
+    }
+    else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
 
   List<String> tittle = ["TENANT INFO", "YOUR DOC's", "DOCUMENTS"];
   int? pageIndex=0;
@@ -415,7 +444,7 @@ class _detailsState extends State<details> {
                                                       ),
                                                       child: Image.asset(AppImages.work,width: 16,fit: BoxFit.fill,color: Colors.black)),
                                                   const SizedBox(width: 5,),
-                                                  Text(snapshot.data![len].Tenant_WorkProfile,
+                                                  Text(snapshot.data![len].Floor,
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(
                                                         fontSize: 14,
@@ -732,7 +761,7 @@ class _detailsState extends State<details> {
                     valueListenable: number,
                     builder: (context, String num,__) {
                       return FutureBuilder<List<TenantPdfModel>>(
-                        future: fetchpdf(widget.iidd,num),
+                        future: fetchpdf(num,widget.tenant_numm,widget.subbb_id),
                         builder: (context, snapshot) {
                           if(snapshot.connectionState == ConnectionState.waiting){
                             return Center(child: CircularProgressIndicator());
@@ -762,7 +791,7 @@ class _detailsState extends State<details> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => PdfViewScreen(pdfPath: 'https://verifyserve.social/upload/${snapshot.data![index].documentPDF}'),
+                                          builder: (context) => PdfViewScreen(pdfPath: 'https://verifyserve.social/Done_Verification/${snapshot.data![index].documentPDF}'),
                                         ),
                                       );
                                     },
@@ -787,7 +816,7 @@ class _detailsState extends State<details> {
                                                 children: [
                                                   SizedBox(
                                                       width: 150,
-                                                      child: Text('${snapshot.data![index].documentName}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 1.5,overflow: TextOverflow.ellipsis),)),
+                                                      child: Text('${snapshot.data![index].documentname}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 1.5,overflow: TextOverflow.ellipsis),)),
                                                 ],
                                               ),
                                               Spacer(),
@@ -810,7 +839,7 @@ class _detailsState extends State<details> {
           if(pageIndex == 2)SizedBox(
             height: 20,
           ),
-          if(pageIndex == 2)Column(
+          /*if(pageIndex == 2)Column(
             children: [
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -858,53 +887,75 @@ class _detailsState extends State<details> {
                 ),
               )
             ],
-          ),
+          ),*/
           if(pageIndex == 2)Column(
             children: [
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white),
-                ),
-                child: ValueListenableBuilder(
-                    valueListenable: name,
-                    builder: (context, String n,__) {
-                      return ValueListenableBuilder(
-                          valueListenable: email,
-                          builder: (context, String e,__) {
-                            return ValueListenableBuilder(
-                                valueListenable: number,
-                                builder: (context, String num,__) {
-                                  return Row(
-                                    children: [
-                                      Icon(Icons.play_arrow,color: Colors.white,),
-                                      SizedBox(width: 5,),
-                                      Center(
-                                        child: InkWell(
-                                          onTap: () {
-                                            fetchdata("Police Verification", n, e, num, widget.iidd);
-                                            showTopSnackBar(
-                                              context,
-                                              CustomSnackBar.info(
-                                                message:
-                                                "Query Send, we will contact you soon!",
-                                              ),);
-                                          },
-                                          child: Text("Police Verification",style: TextStyle(
-                                              color: Colors.white
-                                          ),),
-                                        ),
-                                      )
-                                    ],
-                                  );
-                                }
-                            );
-                          }
+              FutureBuilder<List<Catid>>(
+                  future: fetchData_Documen(),
+                  builder: (context,abc){
+                  return ListView.builder(
+                      itemCount: abc.data!.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context,int len){
+                      return Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Text(""+abc.data![len].T_Name,style: TextStyle(
+                                color: Colors.white
+                            ),),
+
+                            SizedBox(
+                              height: 20,
+                            ),
+
+                          //var url = Uri.parse("https://verifyserve.social/WebService4.asmx/showing_data_by_bulding_subid_police_verifycation_document?building_subid=122");
+                          //final responcee = await http.get(Uri.parse("https://verifyserve.social/WebService4.asmx/showing_data_by_bulding_subid_police_verifycation_document?building_subid=122"));
+
+                            Container(
+                              padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(width: 1, color: Colors.red),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.red.withOpacity(0.5),
+                                      blurRadius: 10,
+                                      offset: Offset(0, 0),
+                                      blurStyle: BlurStyle.outer
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  // Icon(Iconsax.sort_copy,size: 15,),
+                                  //w SizedBox(width: 10,),
+                                  Text("Pending"/*+abc.data![len].Building_Name.toUpperCase()*/,
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 0.5
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          ],
+                        ),
                       );
                     }
-                ),
+                  );
+                }
               )
             ],
           ),

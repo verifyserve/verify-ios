@@ -1,28 +1,42 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../../utils/constant.dart';
 import 'Add/AddTenant_Documaintation.dart';
-import 'Main/ShowPropertyTenant.dart';
-import 'add_tenant.dart';
+import 'View_All_Details_Owner.dart';
+import 'View_All_Details_Tenant.dart';
 
-class Catid{
-  final int id;
-  final String PropertyAddress;
-  final String Society;
-  final String Place;
-  final String City;
-  final String type;
-  final String no;
-  Catid({required this.id,required this.PropertyAddress,required this.Society,required this.Place,required this.City,required this.no,required this.type});
-  factory Catid.FromJson(Map<String,dynamic>json){
-    return Catid(id: json['DPS_id'],PropertyAddress: json['PropertyAddress'],Society: json['Society'],Place: json['Place'],City: json['City'],no: json['Owner_Number'],type: json['Property_type']);
+class Catid {
+  final int tup_id;
+  final String Reelestate_Image;
+  final String Address_;
+  final String Place_;
+  final String floor_ ;
+  final String flat_;
+  final String Tenant_Rented_Amount;
+  final String Tenant_Rented_Date;
+  final String Owner_number;
+  final String Tenant_number;
+  final String maintence;
+  final String Bhk_Squarefit;
+  final String Subid;
+
+  Catid(
+      {required this.tup_id,required this.Reelestate_Image,required this.Address_,required this.Place_,required this.floor_,required this.flat_,
+        required this.Tenant_Rented_Amount,required this.Tenant_Rented_Date,required this.Owner_number,required this.Tenant_number,required this.maintence,required this.Bhk_Squarefit,required this.Subid});
+
+  factory Catid.FromJson(Map<String, dynamic>json){
+    return Catid(tup_id: json['TUP_id'],Address_: json['Property_Number'],
+        Reelestate_Image: json['Property_Image'],Place_: json['PropertyAddress'],
+        floor_: json['FLoorr'], flat_: json['Flat'],
+        Tenant_Rented_Amount: json['Tenant_Rented_Amount'], Tenant_Rented_Date: json['Tenant_Rented_Date'],
+        Owner_number: json['Owner_Number'], Tenant_number: json['Tenant_Number'],maintence: json['Looking_Prop_'],
+        Bhk_Squarefit: json['About_tenant'], Subid: json['Subid']);
   }
 }
 
@@ -36,6 +50,8 @@ class FlatList extends StatefulWidget {
 class _FlatListState extends State<FlatList> {
 
   String _data = '';
+  String _number = '';
+  String _name = '';
 
   final TextEditingController _nnoo = TextEditingController();
 
@@ -55,14 +71,26 @@ class _FlatListState extends State<FlatList> {
     number.value = preferences.getString("phone") ?? '';
   }
 
-  Future<List<Catid>> fetchData(id) async{
-    var url=Uri.parse("https://verifyserve.social/WebService2.asmx/Show_Property_Documaintation?number=$_data&property_type=Flat");
-    final responce=await http.get(url);
-    if(responce.statusCode==200){
-      List listresponce=json.decode(responce.body);
+  Future<List<Catid>> fetchData(numbe) async {
+    var url = Uri.parse("https://verifyserve.social/WebService4.asmx/Show_Tenant_Table_by_Owner_Number_?Owner_Number=$numbe");
+    final responce = await http.get(url);
+    if (responce.statusCode == 200) {
+      List listresponce = json.decode(responce.body);
       return listresponce.map((data) => Catid.FromJson(data)).toList();
     }
-    else{
+    else {
+      throw Exception('Unexpected error occured!');
+    }
+  }
+
+  Future<List<Catid>> fetchData_tenat(numbe) async {
+    var url = Uri.parse("https://verifyserve.social/WebService4.asmx/Show_Tenant_Table_by_tenant_Number_?Tenant_Number=$numbe");
+    final responce = await http.get(url);
+    if (responce.statusCode == 200) {
+      List listresponce = json.decode(responce.body);
+      return listresponce.map((data) => Catid.FromJson(data)).toList();
+    }
+    else {
       throw Exception('Unexpected error occured!');
     }
   }
@@ -74,221 +102,725 @@ class _FlatListState extends State<FlatList> {
       backgroundColor: Colors.black,
       title: Image.asset(AppImages.verify, height: 55),),*/
       backgroundColor: Colors.black,
-        body: Container(
-          child: FutureBuilder<List<Catid>>(
-              future: fetchData(""+1.toString()),
-              builder: (context,abc){
-                if(abc.connectionState == ConnectionState.waiting){
-                  return Center(child: CircularProgressIndicator());
-                }
-                else if(abc.hasError){
-                  return Text('${abc.error}');
-                }
-                else if (abc.data == null || abc.data!.isEmpty) {
-                  // If the list is empty, show an empty image
-                  return Center(
-                    child: Column(
-                      children: [
-                       // Lottie.asset("assets/images/no data.json",width: 450),
-                        Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),),
-                      ],
-                    ),
-                  );
-                }
-                else{
-                  return ListView.builder(
-                      itemCount: abc.data!.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (BuildContext context,int len){
-                        return GestureDetector(
-                          onTap: () async {
-                            //  int itemId = abc.data![len].id;
-                            //int iiid = abc.data![len].PropertyAddress
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
-                            prefs.setString('id_Document', abc.data![len].id.toString());
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute
-                                  (builder: (context) => ShowProperty(iidd: abc.data![len].id.toString()))
+        body: ValueListenableBuilder(
+            valueListenable: number,
+            builder: (context, String num,__) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20),
+                    child: FutureBuilder<List<Catid>>(
+                        future: fetchData(num),
+                        builder: (context,abc){
+                          if(abc.connectionState == ConnectionState.waiting){
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          else if(abc.hasError){
+                            return Text('${abc.error}');
+                          }
+                          else if (abc.data == null || abc.data!.isEmpty) {
+                            // If the list is empty, show an empty image
+                            return Center(
+                              child: Column(
+                                children: [
+                                  // Lottie.asset("assets/images/no data.json",width: 450),
+                                  Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),),
+                                ],
+                              ),
                             );
-                          },
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 10),
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Column(
+                          }
+                          else{
+                            return ListView.builder(
+                                itemCount: abc.data!.length,
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (BuildContext context,int len){
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      //  int itemId = abc.data![len].id;
+                                      //int iiid = abc.data![len].PropertyAddress
+                                      /*Navigator.push(
+                                          context,
+                                          MaterialPageRoute
+                                            (builder: (context) => ShowProperty(iidd: abc.data![len].id.toString()))
+                                      );*/
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute
+                                            (builder: (context) => View_Details(iidd: '${abc.data![len].tup_id.toString()}', SUbid: '${abc.data![len].Subid.toString()}', T_num: '${abc.data![len].Tenant_number.toString()}', O_Num: '${abc.data![len].Owner_number.toString()}',))
+                                      );
+                                    },
+                                    child: Container(
+                                      child: Column(
                                         children: [
-                                          ClipRRect(
-                                            borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                            child:  Container(
-                                              child: Image.asset(AppImages.propertysale,width: 120,fit: BoxFit.fill),
-                                            ),
-                                          ),
-                                          SizedBox(height: 5,),
-                                          Container(
-                                            padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(5),
-                                              border: Border.all(width: 1, color: Colors.green),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.green.withOpacity(0.5),
-                                                    blurRadius: 10,
-                                                    offset: Offset(0, 0),
-                                                    blurStyle: BlurStyle.outer
-                                                ),
-                                              ],
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                // Icon(Iconsax.sort_copy,size: 15,),
-                                                //w SizedBox(width: 10,),
-                                                Text(""+abc.data![len].type.toUpperCase(),
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.w500,
-                                                      letterSpacing: 0.5
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 20),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(15),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          ClipRRect(
+                                                            borderRadius:
+                                                            const BorderRadius.all(Radius.circular(10)),
+                                                            child: Container(
+                                                              height: 100,
+                                                              width: 120,
+                                                              child: CachedNetworkImage(
+                                                                imageUrl:
+                                                                "https://verifyserve.social/"+abc.data![len].Reelestate_Image,
+                                                                fit: BoxFit.cover,
+                                                                placeholder: (context, url) => Image.asset(
+                                                                  AppImages.loading,
+                                                                  fit: BoxFit.cover,
+                                                                ),
+                                                                errorWidget: (context, error, stack) =>
+                                                                    Image.asset(
+                                                                      AppImages.imageNotFound,
+                                                                      fit: BoxFit.cover,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      ),
+                                                      SizedBox(width: 5,),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+
+                                                              SizedBox(
+                                                                width: 5,
+                                                              ),
+
+                                                              Container(
+                                                                padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(5),
+                                                                  border: Border.all(width: 1, color: Colors.purple),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors.purple.withOpacity(0.5),
+                                                                        blurRadius: 10,
+                                                                        offset: Offset(0, 0),
+                                                                        blurStyle: BlurStyle.outer
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    // Icon(Iconsax.sort_copy,size: 15,),
+                                                                    //SizedBox(width: 10,),
+                                                                    Text(""+abc.data![len].floor_/*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                                      style: TextStyle(
+                                                                          fontSize: 12,
+                                                                          color: Colors.black,
+                                                                          fontWeight: FontWeight.w500,
+                                                                          letterSpacing: 0.5
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              Container(
+                                                                padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(5),
+                                                                  border: Border.all(width: 1, color: Colors.orange),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors.orange.withOpacity(0.5),
+                                                                        blurRadius: 10,
+                                                                        offset: Offset(0, 0),
+                                                                        blurStyle: BlurStyle.outer
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    // Icon(Iconsax.sort_copy,size: 15,),
+                                                                    //SizedBox(width: 10,),
+                                                                    Text(""+abc.data![len].Bhk_Squarefit/*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                                      style: TextStyle(
+                                                                          fontSize: 12,
+                                                                          color: Colors.black,
+                                                                          fontWeight: FontWeight.w500,
+                                                                          letterSpacing: 0.5
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+
+                                                          Row(
+                                                            children: [
+                                                              Icon(Iconsax.location_copy,size: 12,color: Colors.red,),
+                                                              SizedBox(width: 2,),
+                                                              Text("Property Address",
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 2,
+                                                                style: TextStyle(
+                                                                    fontSize: 11,
+                                                                    color: Colors.black,
+                                                                    fontWeight: FontWeight.w600),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            width: 150,
+                                                            child: Text("    "+abc.data![len].Address_,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              style: TextStyle(
+                                                                  fontSize: 10,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w400),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+
+                                                          Row(
+                                                            children: [
+                                                              Icon(PhosphorIcons.push_pin,size: 12,color: Colors.red,),
+                                                              SizedBox(width: 2,),
+                                                              Text("Rent And Maintaince",
+                                                                style: TextStyle(
+                                                                    fontSize: 11,
+                                                                    color: Colors.black,
+                                                                    fontWeight: FontWeight.w600),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            width: 180,
+                                                            child: Text("   "+abc.data![len].Tenant_Rented_Amount+"  |   "+abc.data![len].maintence
+                                                              ,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w400
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
+
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+
+                                                  Row(
+                                                    children: [
+
+                                                      Container(
+                                                        padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          border: Border.all(width: 1, color: Colors.red),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.red.withOpacity(0.5),
+                                                                blurRadius: 10,
+                                                                offset: Offset(0, 0),
+                                                                blurStyle: BlurStyle.outer
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            // Icon(Iconsax.sort_copy,size: 15,),
+                                                            //SizedBox(width: 10,),
+                                                            Text(""+abc.data![len].flat_/*+abc.data![len].flat_*//*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  letterSpacing: 0.5
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+
+                                                      Container(
+                                                        padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          border: Border.all(width: 1, color: Colors.blue),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.blue.withOpacity(0.5),
+                                                                blurRadius: 10,
+                                                                offset: Offset(0, 0),
+                                                                blurStyle: BlurStyle.outer
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            // Icon(Iconsax.sort_copy,size: 15,),
+                                                            //SizedBox(width: 10,),
+                                                            Text(""+abc.data![len].Place_/*+abc.data![len].flat_*//*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  letterSpacing: 0.5
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          border: Border.all(width: 1, color: Colors.green),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.green.withOpacity(0.5),
+                                                                blurRadius: 10,
+                                                                offset: Offset(0, 0),
+                                                                blurStyle: BlurStyle.outer
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            // Icon(Iconsax.sort_copy,size: 15,),
+                                                            //SizedBox(width: 10,),
+                                                            Text(""+abc.data![len].Tenant_Rented_Date/*+abc.data![len].floor_*//*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  letterSpacing: 0.5
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                ],
+                                              ),
                                             ),
-                                          ),
+                                          )
                                         ],
                                       ),
-                                      SizedBox(width: 5,),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                    ),
+                                  );
+                                });
+                          }
+
+
+                        }
+
+                    ),
+
+
+                  ),
+
+                  Container(
+                    child: FutureBuilder<List<Catid>>(
+                        future: fetchData_tenat(num),
+                        builder: (context,abc){
+                          if(abc.connectionState == ConnectionState.waiting){
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          else if(abc.hasError){
+                            return Text('${abc.error}');
+                          }
+                          else if (abc.data == null || abc.data!.isEmpty) {
+                            // If the list is empty, show an empty image
+                            return Center(
+                              child: Column(
+                                children: [
+                                  // Lottie.asset("assets/images/no data.json",width: 450),
+                                  Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),),
+                                ],
+                              ),
+                            );
+                          }
+                          else{
+                            return ListView.builder(
+                                itemCount: abc.data!.length,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (BuildContext context,int len){
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      //  int itemId = abc.data![len].id;
+                                      //int iiid = abc.data![len].PropertyAddress
+                                      /*Navigator.push(
+                                          context,
+                                          MaterialPageRoute
+                                            (builder: (context) => ShowProperty(iidd: abc.data![len].id.toString()))
+                                      );*/
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute
+                                            (builder: (context) => View_Details_Tenant(iidd: '${abc.data![len].tup_id.toString()}', SUbid: '${abc.data![len].Subid.toString()}', T_num: '${abc.data![len].Tenant_number.toString()}', O_Num: '${abc.data![len].Owner_number.toString()}',))
+                                      );
+                                    },
+                                    child: Container(
+                                      child: Column(
                                         children: [
-                                          Row(
-                                            children: [
-                                              Icon(Iconsax.location_copy,size: 12,color: Colors.red,),
-                                              SizedBox(width: 2,),
-                                              Text("Property Address",
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 2,
-                                                style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w600),
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 20),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(15),
                                               ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 180,
-                                            child: Text(""+abc.data![len].PropertyAddress,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          ClipRRect(
+                                                            borderRadius:
+                                                            const BorderRadius.all(Radius.circular(10)),
+                                                            child: Container(
+                                                              height: 100,
+                                                              width: 120,
+                                                              child: CachedNetworkImage(
+                                                                imageUrl:
+                                                                "https://verifyserve.social/"+abc.data![len].Reelestate_Image,
+                                                                fit: BoxFit.cover,
+                                                                placeholder: (context, url) => Image.asset(
+                                                                  AppImages.loading,
+                                                                  fit: BoxFit.cover,
+                                                                ),
+                                                                errorWidget: (context, error, stack) =>
+                                                                    Image.asset(
+                                                                      AppImages.imageNotFound,
+                                                                      fit: BoxFit.cover,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          ),
+
+                                                        ],
+                                                      ),
+                                                      SizedBox(width: 5,),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+
+                                                              SizedBox(
+                                                                width: 5,
+                                                              ),
+
+                                                              Container(
+                                                                padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(5),
+                                                                  border: Border.all(width: 1, color: Colors.purple),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors.purple.withOpacity(0.5),
+                                                                        blurRadius: 10,
+                                                                        offset: Offset(0, 0),
+                                                                        blurStyle: BlurStyle.outer
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    // Icon(Iconsax.sort_copy,size: 15,),
+                                                                    //SizedBox(width: 10,),
+                                                                    Text(""+abc.data![len].floor_/*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                                      style: TextStyle(
+                                                                          fontSize: 12,
+                                                                          color: Colors.black,
+                                                                          fontWeight: FontWeight.w500,
+                                                                          letterSpacing: 0.5
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+
+                                                              SizedBox(
+                                                                width: 10,
+                                                              ),
+                                                              Container(
+                                                                padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.circular(5),
+                                                                  border: Border.all(width: 1, color: Colors.orange),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                        color: Colors.orange.withOpacity(0.5),
+                                                                        blurRadius: 10,
+                                                                        offset: Offset(0, 0),
+                                                                        blurStyle: BlurStyle.outer
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                child: Row(
+                                                                  children: [
+                                                                    // Icon(Iconsax.sort_copy,size: 15,),
+                                                                    //SizedBox(width: 10,),
+                                                                    Text(""+abc.data![len].Bhk_Squarefit/*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                                      style: TextStyle(
+                                                                          fontSize: 12,
+                                                                          color: Colors.black,
+                                                                          fontWeight: FontWeight.w500,
+                                                                          letterSpacing: 0.5
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+
+                                                          Row(
+                                                            children: [
+                                                              Icon(Iconsax.location_copy,size: 12,color: Colors.red,),
+                                                              SizedBox(width: 2,),
+                                                              Text("Property Address",
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 2,
+                                                                style: TextStyle(
+                                                                    fontSize: 11,
+                                                                    color: Colors.black,
+                                                                    fontWeight: FontWeight.w600),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            width: 150,
+                                                            child: Text("    "+abc.data![len].Address_,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              style: TextStyle(
+                                                                  fontSize: 10,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w400),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+
+                                                          Row(
+                                                            children: [
+                                                              Icon(PhosphorIcons.push_pin,size: 12,color: Colors.red,),
+                                                              SizedBox(width: 2,),
+                                                              Text("Rent And Maintaince",
+                                                                style: TextStyle(
+                                                                    fontSize: 11,
+                                                                    color: Colors.black,
+                                                                    fontWeight: FontWeight.w600),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            width: 180,
+                                                            child: Text("   "+abc.data![len].Tenant_Rented_Amount+"  |   "+abc.data![len].maintence
+                                                              ,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w400
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 5,
+                                                          ),
+
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+
+                                                  Row(
+                                                    children: [
+
+                                                      Container(
+                                                        padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          border: Border.all(width: 1, color: Colors.red),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.red.withOpacity(0.5),
+                                                                blurRadius: 10,
+                                                                offset: Offset(0, 0),
+                                                                blurStyle: BlurStyle.outer
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            // Icon(Iconsax.sort_copy,size: 15,),
+                                                            //SizedBox(width: 10,),
+                                                            Text(""+abc.data![len].flat_/*+abc.data![len].flat_*//*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  letterSpacing: 0.5
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+
+                                                      Container(
+                                                        padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          border: Border.all(width: 1, color: Colors.blue),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.blue.withOpacity(0.5),
+                                                                blurRadius: 10,
+                                                                offset: Offset(0, 0),
+                                                                blurStyle: BlurStyle.outer
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            // Icon(Iconsax.sort_copy,size: 15,),
+                                                            //SizedBox(width: 10,),
+                                                            Text(""+abc.data![len].Place_/*+abc.data![len].flat_*//*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  letterSpacing: 0.5
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          border: Border.all(width: 1, color: Colors.green),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Colors.green.withOpacity(0.5),
+                                                                blurRadius: 10,
+                                                                offset: Offset(0, 0),
+                                                                blurStyle: BlurStyle.outer
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            // Icon(Iconsax.sort_copy,size: 15,),
+                                                            //SizedBox(width: 10,),
+                                                            Text(""+abc.data![len].Tenant_Rented_Date/*+abc.data![len].floor_*//*+abc.data![len].Building_Name.toUpperCase()*/,
+                                                              style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.w500,
+                                                                  letterSpacing: 0.5
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(Iconsax.home_1_copy,size: 12,color: Colors.red,),
-                                              SizedBox(width: 2,),
-                                              Text("Society",
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 2,
-                                                style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w600),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 180,
-                                            child: Text(""+abc.data![len].Society,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Icon(PhosphorIcons.push_pin,size: 12,color: Colors.red,),
-                                              SizedBox(width: 2,),
-                                              Text("Place",
-                                                style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w600),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 180,
-                                            child: Text(""+abc.data![len].Place,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(Iconsax.building_3_copy,size: 14,color: Colors.red,),
-                                              SizedBox(width: 3,),
-                                              Text(""+abc.data![len].City.toUpperCase(),
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey.shade600,
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                          )
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      });
-                }
+                                    ),
+                                  );
+                                });
+                          }
 
 
-              }
+                        }
 
-          ),
+                    ),
 
 
+                  ),
+                ],
+              ),
+            );
+          }
         ),
 
 

@@ -7,15 +7,15 @@ class RealEstateSlider {
 
   RealEstateSlider.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    rimg = json['rimg'];
-    pid = json['pid'];
+    rimg = json['imagepath'];
+    pid = json['imagename'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['rimg'] = this.rimg;
-    data['pid'] = this.pid;
+    data['imagepath'] = this.rimg;
+    data['imagename'] = this.pid;
     return data;
   }
 }

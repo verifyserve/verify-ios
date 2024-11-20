@@ -1,32 +1,20 @@
 class TenantPdfModel {
-  int? docsId;
-  String? documentName;
   String? documentPDF;
-  String? ownerNumber;
-  int? tenantId;
+  String? documentname;
 
   TenantPdfModel(
-      {this.docsId,
-        this.documentName,
-        this.documentPDF,
-        this.ownerNumber,
-        this.tenantId});
+      {this.documentPDF,
+      this.documentname});
 
   TenantPdfModel.fromJson(Map<String, dynamic> json) {
-    docsId = json['Docs_id'];
-    documentName = json['document_name'];
-    documentPDF = json['Document_PDF'];
-    ownerNumber = json['Owner_Number'];
-    tenantId = json['tenant_id'];
+    documentPDF = json['document_pdf'];
+    documentname = json['documentname'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Docs_id'] = this.docsId;
-    data['document_name'] = this.documentName;
-    data['Document_PDF'] = this.documentPDF;
-    data['Owner_Number'] = this.ownerNumber;
-    data['tenant_id'] = this.tenantId;
+    data['document_pdf'] = this.documentPDF;
+    data['documentname'] = this.documentname;
     return data;
   }
 }

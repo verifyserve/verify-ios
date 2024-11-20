@@ -22,6 +22,7 @@ import 'package:verify/utils/message_handler.dart';
 import '../../data/model/realestateModel.dart';
 import 'package:http/http.dart' as http;
 import '../vehicle/parking_notification.dart';
+import 'Residential_filter.dart';
 
 class RealEstateHomepage extends StatefulWidget {
   const RealEstateHomepage({super.key});
@@ -100,6 +101,66 @@ class _RealEstateHomepageState extends State<RealEstateHomepage> {
     "Warehouse",
     "Office"
   ];
+
+  void _showBottomSheet(BuildContext context) {
+
+    List<String> timing = [
+      "Residential",
+      "Plots",
+      "Commercial",
+    ];
+    ValueNotifier<int> timingIndex = ValueNotifier(0);
+
+    String displayedData = "Press a button to display data";
+
+    void updateData(String newData) {
+      setState(() {
+        displayedData = newData;
+      });
+    }
+
+    showModalBottomSheet(
+      backgroundColor: Colors.black,
+      context: context,
+      builder: (BuildContext context) {
+        return  DefaultTabController(
+          length: 2,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 5,right: 5,top: 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 5,),
+                Container(
+                  padding: EdgeInsets.all(3),
+                  height: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20), color: Colors.grey),
+                  child: TabBar(
+                    indicator: BoxDecoration(
+                      color: Colors.red[500],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    // ignore: prefer_const_literals_to_create_immutables
+                    tabs: [
+                      Tab(text: 'Residential'),
+                      Tab(text: 'Commercial'),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(children: [
+                    Residential_filter(),
+                    Residential_filter()
+                  ]),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -185,7 +246,7 @@ class _RealEstateHomepageState extends State<RealEstateHomepage> {
               const SizedBox(
                 height: 20,
               ),
-              FutureBuilder<List<RealstateModel>>(
+              /*FutureBuilder<List<RealstateModel>>(
                 future: fetchCarouselData(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -237,842 +298,49 @@ class _RealEstateHomepageState extends State<RealEstateHomepage> {
 
               const SizedBox(
                 height: 20,
+              ),*/
+
+
+              Container(
+                height: 45,
+                width: 1.sw,
+                margin: const EdgeInsets.symmetric(horizontal: 0,vertical: 0),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.pink, Colors.red],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  onPressed: (){
+                    _showBottomSheet(context);
+                  },
+                  child: Text(
+                    "Find Property",
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 5,
               ),
 
               ValueListenableBuilder(
-                  valueListenable: bloc.topListLoader,
-                  builder: (context, bool loading, _) {
-                    if (loading) {
-                      return const Center(
-                        child:SizedBox(),
-                      );
-                    }
-                    return SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: bloc.topList.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              pageIndex = index;
-                              bloc.path.value = bloc.topList[index].rRname;
-                              // if(pageIndex==2){
-                              //   bloc.path.value = "Rent";
-                              // }
-                              if (pageIndex == 1 || pageIndex ==0) {
-                                bloc.buyRent();
-                              }
-                              /*if(pageIndex == 2 || pageIndex == 3){
-                                bloc.location.value = null;
-                                bloc.showCommercial();
-                              }*/
-                              if(pageIndex == 2){
-                                bloc.location.value = null;
-                                bloc.showCommercial(lookingTittle[lookingIndex]);
-                              }
-                              if(pageIndex == 3){
-                                bloc.location.value = null;
-                                bloc.getPGData();
-                              }
-                              // print(bloc.path.value);
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              margin: const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                  color: pageIndex == index
-                                      ? Colors.red
-                                      : Colors.grey,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                bloc.topList[index].rRname ?? "",
-                                style: TextStyle(
-                                    color: pageIndex == index
-                                        ? Colors.white
-                                        : Colors.black),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }),
-              if (pageIndex == 0 || pageIndex == 1 || pageIndex==2)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if(pageIndex == 2)const SizedBox(
-                      height: 20,
-                    ),
-                    if(pageIndex == 2)Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        "Looking To",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    if(pageIndex == 2)const SizedBox(
-                      height: 10,
-                    ),
-                    if(pageIndex == 2)SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: 2,
-                        physics: const NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              lookingIndex = index;
-                              bloc.showCommercial(lookingTittle[lookingIndex]);
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 10),
-                              margin: EdgeInsets.only(left: 45.w, right: 45.w),
-                              decoration: BoxDecoration(
-                                  color: lookingIndex == index
-                                      ? const Color.fromARGB(255, 242, 216, 184)
-                                      : Colors.black,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: lookingIndex == index
-                                          ? const Color.fromARGB(
-                                          255, 242, 216, 184)
-                                          : Colors.white,
-                                      width: 1)),
-                              child: Text(
-                                lookingTittle[index],
-                                style: TextStyle(
-                                    color: lookingIndex == index
-                                        ? Colors.black
-                                        : Colors.white),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: SizedBox(
-                        height: 40,
-                        child: ListView.builder(
-                          itemCount: 12,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                pageIndex2 = index;
-                                bloc.type.value = iconsTittle[index];
-                                setState(() {});
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 10),
-                                margin: const EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                    color: pageIndex2 == index
-                                        ? Colors.white
-                                        : Colors.grey,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Row(
-                                  children: [
-                                    // const Icon(
-                                    //   Icons.abc,
-                                    //   color: Colors.black,
-                                    // ),
-                                    // const SizedBox(
-                                    //   width: 10,
-                                    // ),
-                                    Text(
-                                      iconsTittle[index],
-                                      style: TextStyle(
-                                          fontWeight: pageIndex2 == index
-                                              ? FontWeight.w500
-                                              : FontWeight.w400),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ValueListenableBuilder(valueListenable: bloc.locationLoader, builder: (context, bool loading, child) {
-                      if(loading){
-                        return CircularProgressIndicator();
-                      }
-                      return Container(
-                        // height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: DropdownButtonFormField(
-                          dropdownColor: Colors.grey.shade500,
-                          items: bloc.locationData.map((realstateLocation items) {
-                            return DropdownMenuItem(
-                              value: items.locationh,
-                              child: Text(
-                                items.locationh ?? "",
-                                style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w500),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (v) {
-                            bloc.location.value = v;
-                          },
-                          // style: TextStyle(color: Colors.white),
-                          hint: const Text(
-                            "Select Location",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      );
-                    },),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "Select BHK",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: bhk.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              bhkIndex = index;
-                              bloc.bhk.value = bhk[index];
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              margin: const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: bhkIndex == index
-                                          ? Colors.red
-                                          : Colors.white,
-                                      width: 2)),
-                              child: Text(bhk[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if(pageIndex == 0 || pageIndex == 1){
-                          bloc.getListByFilter();
-                        }
-                        if(pageIndex == 2){
-                          bloc.getCommercialListByFilter(lookingType: lookingTittle[lookingIndex],);
-                        }
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.red),
-                        child: ValueListenableBuilder(
-                            valueListenable: bloc.buttonLoader,
-                            builder: (context, bool loading, _) {
-                              if (loading) {
-                                return const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  ),
-                                );
-                              }
-                              return const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Icon(Icons.comment),
-                                  // SizedBox(
-                                  //   width: 5,
-                                  // ),
-                                  Text(
-                                    "SUBMIT",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        color: Colors.white),
-                                  )
-                                ],
-                              );
-                            }),
-                      ),
-                    ),
-                  ],
-                ),
-              // if (pageIndex == 2)
-              //   Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       const SizedBox(
-              //         height: 20,
-              //       ),
-              //       Align(
-              //         alignment: Alignment.centerLeft,
-              //         child: const Text(
-              //           "Looking To",
-              //           style: TextStyle(color: Colors.white),
-              //         ),
-              //       ),
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       SizedBox(
-              //         height: 40,
-              //         child: ListView.builder(
-              //           itemCount: 2,
-              //           physics: const NeverScrollableScrollPhysics(),
-              //           scrollDirection: Axis.horizontal,
-              //           itemBuilder: (context, index) {
-              //             return GestureDetector(
-              //               onTap: () {
-              //                 lookingIndex = index;
-              //                 setState(() {});
-              //               },
-              //               child: Container(
-              //                 padding: const EdgeInsets.symmetric(
-              //                     horizontal: 30, vertical: 10),
-              //                 margin: EdgeInsets.only(left: 45.w, right: 45.w),
-              //                 decoration: BoxDecoration(
-              //                     color: lookingIndex == index
-              //                         ? const Color.fromARGB(255, 242, 216, 184)
-              //                         : Colors.black,
-              //                     borderRadius: BorderRadius.circular(10),
-              //                     border: Border.all(
-              //                         color: lookingIndex == index
-              //                             ? const Color.fromARGB(
-              //                                 255, 242, 216, 184)
-              //                             : Colors.white,
-              //                         width: 1)),
-              //                 child: Text(
-              //                   lookingTittle[index],
-              //                   style: TextStyle(
-              //                       color: lookingIndex == index
-              //                           ? Colors.black
-              //                           : Colors.white),
-              //                 ),
-              //               ),
-              //             );
-              //           },
-              //         ),
-              //       ),
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       ValueListenableBuilder(valueListenable: bloc.locationLoader, builder: (context, bool loading, child) {
-              //         if(loading){
-              //           return CircularProgressIndicator();
-              //         }
-              //         return Container(
-              //           // height: 40,
-              //           decoration: BoxDecoration(
-              //             color: Colors.white.withOpacity(0.2),
-              //             borderRadius: BorderRadius.circular(10),
-              //           ),
-              //           padding: const EdgeInsets.symmetric(horizontal: 10),
-              //           child: DropdownButtonFormField(
-              //             dropdownColor: Colors.grey.shade500,
-              //             items: bloc.locationData.map((realstateLocation items) {
-              //               return DropdownMenuItem(
-              //                 value: items.locationh,
-              //                 child: Text(
-              //                   items.locationh ?? "",
-              //                   style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w500),
-              //                 ),
-              //               );
-              //             }).toList(),
-              //             onChanged: (v) {
-              //               bloc.location.value = v;
-              //             },
-              //             // style: TextStyle(color: Colors.white),
-              //             hint: const Text(
-              //               "Select Location",
-              //               style: TextStyle(color: Colors.white),
-              //             ),
-              //           ),
-              //         );
-              //       },),
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       const Align(
-              //         alignment: Alignment.centerLeft,
-              //         child: Text(
-              //           "Property Type",
-              //           style: TextStyle(color: Colors.white),
-              //         ),
-              //       ),
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       Padding(
-              //         padding: const EdgeInsets.symmetric(horizontal: 10),
-              //         child: SizedBox(
-              //           height: 40,
-              //           child: ListView.builder(
-              //             itemCount: 5,
-              //             scrollDirection: Axis.horizontal,
-              //             itemBuilder: (context, index) {
-              //               return GestureDetector(
-              //                 onTap: () {
-              //                   propertyIndex = index;
-              //                   setState(() {});
-              //                 },
-              //                 child: Container(
-              //                   padding: const EdgeInsets.symmetric(
-              //                       horizontal: 10, vertical: 10),
-              //                   margin: const EdgeInsets.only(right: 10),
-              //                   decoration: BoxDecoration(
-              //                       color: propertyIndex == index
-              //                           ? Colors.white
-              //                           : Colors.grey,
-              //                       borderRadius: BorderRadius.circular(10)),
-              //                   child: Row(
-              //                     children: [
-              //                       Text(
-              //                         propertyTittle[index],
-              //                         style: TextStyle(
-              //                             fontWeight: propertyIndex == index
-              //                                 ? FontWeight.w600
-              //                                 : FontWeight.w400),
-              //                       ),
-              //                     ],
-              //                   ),
-              //                 ),
-              //               );
-              //             },
-              //           ),
-              //         ),
-              //       ),
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       const Text(
-              //         "Select BHK",
-              //         style: TextStyle(color: Colors.white),
-              //       ),
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       SizedBox(
-              //         height: 40,
-              //         child: ListView.builder(
-              //           itemCount: bhk.length,
-              //           scrollDirection: Axis.horizontal,
-              //           itemBuilder: (context, index) {
-              //             return GestureDetector(
-              //               onTap: () {
-              //                 bhkIndex = index;
-              //                 bloc.bhk.value = bhk[index];
-              //                 setState(() {});
-              //               },
-              //               child: Container(
-              //                 padding: const EdgeInsets.symmetric(
-              //                     horizontal: 10, vertical: 10),
-              //                 margin: const EdgeInsets.only(right: 10),
-              //                 decoration: BoxDecoration(
-              //                     color: Colors.white,
-              //                     borderRadius: BorderRadius.circular(10),
-              //                     border: Border.all(
-              //                         color: bhkIndex == index
-              //                             ? Colors.red
-              //                             : Colors.white,
-              //                         width: 2)),
-              //                 child: Text(bhk[index]),
-              //               ),
-              //             );
-              //           },
-              //         ),
-              //       ),
-              //       /*Container(
-              //         // height: 40,
-              //         decoration: BoxDecoration(
-              //           color: Colors.white,
-              //           borderRadius: BorderRadius.circular(10),
-              //         ),
-              //         padding: const EdgeInsets.symmetric(horizontal: 10),
-              //         child: DropdownButtonFormField(
-              //           dropdownColor: Colors.white,
-              //           items: bhk.map((String items) {
-              //             return DropdownMenuItem(
-              //               value: items,
-              //               child: Text(
-              //                 items,
-              //                 style: const TextStyle(color: Colors.black),
-              //               ),
-              //             );
-              //           }).toList(),
-              //           onChanged: (v) {},
-              //           // style: TextStyle(color: Colors.white),
-              //           hint: const Text(
-              //             "Select the BHK",
-              //             style: TextStyle(color: Colors.black),
-              //           ),
-              //         ),
-              //       ),*/
-              //       const SizedBox(
-              //         height: 10,
-              //       ),
-              //       GestureDetector(
-              //         onTap: () {
-              //
-              //         },
-              //         child: Container(
-              //           margin: const EdgeInsets.symmetric(horizontal: 20),
-              //           padding: const EdgeInsets.symmetric(
-              //               horizontal: 10, vertical: 10),
-              //           decoration: BoxDecoration(
-              //               borderRadius: BorderRadius.circular(10),
-              //               color: Colors.red),
-              //           child: const Row(
-              //             mainAxisAlignment: MainAxisAlignment.center,
-              //             children: [
-              //               Text(
-              //                 "SUBMIT",
-              //                 style: TextStyle(
-              //                     fontWeight: FontWeight.w500,
-              //                     fontSize: 16,
-              //                     color: Colors.white),
-              //               )
-              //             ],
-              //           ),
-              //         ),
-              //       ),
-              //       const SizedBox(height: 10,),
-              //       ValueListenableBuilder(valueListenable: bloc.commercialLoader, builder:
-              //           (context, bool loading, child) {
-              //         if(loading){
-              //           return const Column(
-              //             children: [
-              //               SizedBox(height: 30,),
-              //               CircularProgressIndicator(color: Colors.white,),
-              //             ],
-              //           );
-              //         }
-              //         return const Column(
-              //           children: [
-              //             SizedBox()
-              //           ],
-              //         );
-              //       },)
-              //     ],
-              //   ),
-              if (pageIndex == 3)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      "Food Availability",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: 2,
-                        physics: const NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              foodIndex = index;
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 10),
-                              margin: EdgeInsets.only(left: 45.w, right: 45.w),
-                              decoration: BoxDecoration(
-                                  color: foodIndex == index
-                                      ? const Color.fromARGB(255, 242, 216, 184)
-                                      : Colors.black,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: foodIndex == index
-                                          ? const Color.fromARGB(
-                                              255, 242, 216, 184)
-                                          : Colors.white,
-                                      width: 1)),
-                              child: Text(
-                                foodTittle[index],
-                                style: TextStyle(
-                                    color: foodIndex == index
-                                        ? Colors.black
-                                        : Colors.white),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ValueListenableBuilder(valueListenable: bloc.locationLoader, builder: (context, bool loading, child) {
-                      if(loading){
-                        return CircularProgressIndicator();
-                      }
-                      return Container(
-                        // height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: DropdownButtonFormField(
-                          dropdownColor: Colors.grey.shade500,
-                          items: bloc.locationData.map((realstateLocation items) {
-                            return DropdownMenuItem(
-                              value: items.locationh,
-                              child: Text(
-                                items.locationh ?? "",
-                                style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w500),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (v) {
-                            bloc.location.value = v;
-                          },
-                          // style: TextStyle(color: Colors.white),
-                          hint: const Text(
-                            "Select Location",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      );
-                    },),
-                    //
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "Furnishing Type",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: 3,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              FurnishingIndex = index;
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              margin: const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: FurnishingIndex == index
-                                          ? Colors.red
-                                          : Colors.white,
-                                      width: 2)),
-                              child: Text(furnishingTittle[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "Gender",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: 3,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              genderIndex = index;
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              margin: const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: genderIndex == index
-                                          ? Colors.red
-                                          : Colors.white,
-                                      width: 2)),
-                              child: Text(genderTittle[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "Food Type",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: 2,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              foodTypeIndex = index;
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              margin: const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: foodTypeIndex == index
-                                          ? Colors.red
-                                          : Colors.white,
-                                      width: 2)),
-                              child: Text(foodTypeTittle[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      "Facility",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: 2,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              facilityIndex = index;
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
-                              margin: const EdgeInsets.only(right: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: facilityIndex == index
-                                          ? Colors.red
-                                          : Colors.white,
-                                      width: 2)),
-                              child: Text(facilityTittle[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        bloc.getPGListByFilter(AC: facilityTittle[facilityIndex],food: foodTittle[foodIndex],foodType: foodTypeTittle[foodTypeIndex],furnished: furnishingTittle[FurnishingIndex],gender: genderTittle[genderIndex],);
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.red),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Icon(Icons.comment),
-                            // SizedBox(
-                            //   width: 5,
-                            // ),
-                            Text(
-                              "SUBMIT",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              if (pageIndex == null || pageIndex == 0 || pageIndex == 1)
-                ValueListenableBuilder(
                   valueListenable: bloc.buyRentLoader,
                   builder: (context, bool loading,_) {
                     if(loading){
@@ -1092,6 +360,7 @@ class _RealEstateHomepageState extends State<RealEstateHomepage> {
                               if (data.isEmpty) {
                                 return const SizedBox();
                               }
+
                               return Provider.value(value: bloc,child: ContentList(
                                 index: pageIndex,
                                 data: data,
@@ -1233,330 +502,7 @@ class _RealEstateHomepageState extends State<RealEstateHomepage> {
                       ],
                     );
                   }
-                ),
-              if(pageIndex == 2)
-              ValueListenableBuilder(
-                  valueListenable: bloc.commercialLoader,
-                  builder: (context, bool loading,_) {
-                    if(loading){
-                      return const Column(
-                        children: [
-                          SizedBox(height: 30,),
-                          CircularProgressIndicator(color: Colors.white,),
-                        ],
-
-                      );
-                    }
-                    return Column(
-                      children: [
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialFlatList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Flat",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialShowroomList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Showroom",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialWarehouseList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Warehouse",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialShopList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Shop",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialHouseList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For House",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialPlotsList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Plots",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialFarmsList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Farms",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialBasementsList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Basement",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialRoofList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Roof",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialOfficeList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Office",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialApartmentList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Apartment",
-                              ));
-                            }),
-                        ValueListenableBuilder(
-                            valueListenable: bloc.commercialVillaList,
-                            builder: (context, List<commercialPGDetail> data, _) {
-                              if (data.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return Provider.value(value: bloc,child: CommercialList(
-                                data: data,
-                                type: "For Villa",
-                              ));
-                            }),
-                      ],
-                    );
-                  }
               ),
-              if(pageIndex==3)
-              ValueListenableBuilder(
-                valueListenable: bloc.PGLoader,
-                builder: (context, bool loading,_) {
-                  if (loading) {
-                    return const Column(
-                      children: [
-                        SizedBox(height: 30,),
-                        CircularProgressIndicator(color: Colors.white,),
-                      ],
-
-                    );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => Provider.value(value: bloc,child: RealEstateCommercialList(
-                                type:"pg",
-                                data:bloc.PGData,
-                              ),)));
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              "PG's",
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              "see all",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: 290,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          itemCount: bloc.PGData.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                                  return Provider.value(value: bloc,child: PGDetail(id: '${bloc.PGData[index].id}',),);
-                                },));
-                              },
-                              child: Container(
-                                width: 0.78.sw,
-                                margin: EdgeInsets.only(
-                                    bottom: 10, top: index == 0 ? 10 : 10, left:5, right: 10),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 170,
-                                      width: 1.sw,
-                                      child:ClipRRect(
-                                        borderRadius: const BorderRadius.only(topLeft:Radius.circular(5),topRight: Radius.circular(5)),
-                                        child:  CachedNetworkImage(
-                                          imageUrl:
-                                          "http://www.verifyserve.social/upload/${bloc.PGData[index].img}",
-                                          // height: 60.h,
-                                          // width: 120.w,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) => Image.asset(
-                                            AppImages.loading,
-                                            // height: 60.h,
-                                            // width: 120.w,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          errorWidget: (context, error, stack) =>
-                                              Image.asset(
-                                                AppImages.imageNotFound,
-                                                // height: 60.h,
-                                                // width: 120.w,
-                                                fit: BoxFit.cover,
-                                              ),
-                                        ),
-
-                                      ),
-                                    ),
-
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                              child: Text(
-                                                bloc.PGData[index].title ??
-                                                    "",
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 13
-                                                ),
-                                              )),
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          const Text(
-                                            "Available",
-                                            style: TextStyle(color: Colors.red,fontWeight: FontWeight.w500,fontSize: 13),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                                      width: 310,
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.location_on,
-                                            size: 20,
-                                            color: Colors.blue,
-                                          ),
-                                          Text(
-                                            bloc.PGData[index].location??
-                                                "",style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w400,
-                                          ),),
-                                        ],
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                                      child: Text(
-                                        "₹ ${bloc.PGData[index].price}",
-                                        style: const TextStyle(color: Colors.green,fontWeight: FontWeight.w500,fontSize: 14),
-                                      ),
-                                    ),
-                                    // const SizedBox(
-                                    //   height: 10,
-                                    // )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
             ],
           ),
         ),
@@ -1626,18 +572,18 @@ class _ContentListState extends State<ContentList> {
         SizedBox(
           height: 290,
           child: ListView.builder(
-            scrollDirection: Axis.horizontal,
+            scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemCount: widget.data.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  /*Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return Provider.value(value: bloc,child: RealEstateDetail(id: '${widget.data[index].tPid}',),);
-                  },));
+                  },));*/
                 },
                 child: Container(
-                  width: 0.78.sw,
+                  width: 200,
                   margin: EdgeInsets.only(
                       bottom: 10, top: index == 0 ? 10 : 10, left:5, right: 10),
                   decoration: BoxDecoration(
@@ -1648,12 +594,12 @@ class _ContentListState extends State<ContentList> {
                     children: [
                       SizedBox(
                           height: 170,
-                          width: 1.sw,
+                          width: 200,
                           child:ClipRRect(
                             borderRadius: const BorderRadius.only(topLeft:Radius.circular(5),topRight: Radius.circular(5)),
                             child:  CachedNetworkImage(
                               imageUrl:
-                              "http://www.verifyserve.social/upload/${widget.data[index].imagesh}",
+                              "https://www.verifyserve.social/${widget.data[index].imagesh}",
                               // height: 60.h,
                               // width: 120.w,
                               fit: BoxFit.cover,
@@ -1698,26 +644,21 @@ class _ContentListState extends State<ContentList> {
                         height: 10,
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                                child: Text(
-                              widget.data[index].tital ?? "",
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                            fontSize: 13
-                        ),
-                            )),
-                            const SizedBox(
-                              width: 10,
+                                child: Text("${bloc.buyRentDetailsData.first.tital} With ${bloc.buyRentDetailsData.first.balcony} Balcony" ,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13
+                                  ),
+                                )
                             ),
                              Text(
-                             widget.index == 1 ? "For Sale" : "For Rent",
+                               widget.data[index].Buy_Rent ?? "",
                               style: TextStyle(color: Colors.red,fontWeight: FontWeight.w500,fontSize: 13),
                             ),
                           ],
@@ -1900,8 +841,7 @@ class _CommercialListState extends State<CommercialList> {
                           children: [
                             Expanded(
                                 child: Text(
-                                  widget.data[index].title ??
-                                      "",
+                                  widget.data[index].title ?? "",
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(

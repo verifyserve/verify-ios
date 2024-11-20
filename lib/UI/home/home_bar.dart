@@ -94,7 +94,7 @@ class _HomeBarState extends State<HomeBar> {
           body: ValueListenableBuilder(
               valueListenable: currentIndex,
               builder: (context, int index, _) {
-                return pages[index];
+                  return pages[index];
               }
           ),
           bottomNavigationBar: ValueListenableBuilder(

@@ -23,10 +23,10 @@ class RealEstateRepository {
   }
 
   Future<List<RealStateFilters>> getList(path,type) async{
-    String url = "http://www.verifyserve.social/WebService1.asmx/showrealestatedata";
+    String url = "https://verifyserve.social/WebService4.asmx/Show_typeofproperty_lookingproperty";
     Map<String,dynamic> data = {
-      "Path":"$path",
-      "Type":"$type",
+      "Typeofproperty":"$type",
+      "Looking_Property_":"Flat",
     };
     var res = await _api.getRequest(url,data: data);
     var resData = jsonDecode(res);
@@ -38,6 +38,8 @@ class RealEstateRepository {
     Map<String,dynamic> data = {
       "Buy_or_Lease":"$path",
       "Type":"$type",
+
+
     };
     var res = await _api.getRequest(url,data: data);
     var resData = jsonDecode(res);
@@ -65,9 +67,9 @@ class RealEstateRepository {
   }
 
   Future<List<RealStateFilters>> buyRentDetails(String id) async{
-    String url = "http://www.verifyserve.social/WebService1.asmx/Show_realestate_detail";
+    String url = "https://verifyserve.social/WebService4.asmx/Show_proprty_realstate_by_originalid";
     Map<String,dynamic> data = {
-      "id":id
+      "PVR_id":id
     };
     var res = await _api.getRequest(url,data: data);
     var resData = jsonDecode(res);

@@ -20,6 +20,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
     init();
+
   }
 
   init()async{

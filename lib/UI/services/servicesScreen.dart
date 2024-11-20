@@ -98,7 +98,7 @@ class _ServicesScreenState extends State<ServicesScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     return  Scaffold(
       backgroundColor: Colors.black,
-      floatingActionButton: Row(
+      /*floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           ElevatedButton(
@@ -118,7 +118,7 @@ class _ServicesScreenState extends State<ServicesScreen> with SingleTickerProvid
             ],
           ),),
         ],
-      ),
+      ),*/
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.black,

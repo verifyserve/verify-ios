@@ -45,12 +45,12 @@ class AuthBloc extends Bloc {
           loginStreamController.sink.add("success");
       }
       // else{
-    // showMessage(MessageType.error("Either email or password is incorrect"));
+    // showMessage(MessageType.error("Either Mobile Number or Password is incorrect"));
     //   }
     } catch (e, s) {
       debugPrint('$e');
       debugPrintStack(stackTrace: s);
-      showMessage(MessageType.error('Either email or password is incorrect'));
+      showMessage(MessageType.error('Either Mobile Number or Password is incorrect'));
     }finally{
       loginLoader.value = false;
     }

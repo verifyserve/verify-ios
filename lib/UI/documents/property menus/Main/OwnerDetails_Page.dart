@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
+import '../../../../data/model/tenantpdfModel.dart';
 import '../../../../utils/constant.dart';
+import '../../Document/pdfscreen.dart';
 
 class Servant {
   //final int id;
@@ -43,18 +45,20 @@ class aaaa {
   factory aaaa.FromJson(Map<String, dynamic>json){
     return aaaa(Owner_Name: json['Owner_Name'],
         Owner_Number: json['Owner_Number'],
-        Owner_Email: json['Owner_Email'],
-        Property_type: json['Property_type'],
+        Owner_Email: json['Tenant_Rented_Amount'],
+        Property_type: json['Property_Number'],
         PropertyAddress: json['PropertyAddress'],
-        Society: json['Society'],
-        Place: json['Place']);
+        Society: json['Tenant_Rented_Date'],
+        Place: json['FLoorr']);
   }
 }
 
 class Owner_details extends StatefulWidget {
   final String iidd;
-  final String num;
-  const Owner_details({Key? key, required this.iidd, required this.num}) : super(key: key);
+  final String Tenant_num;
+  final String Owner_Num;
+  final String B_Subid;
+  const Owner_details({Key? key, required this.iidd, required this.Tenant_num, required this.Owner_Num, required this.B_Subid}) : super(key: key);
 
 
   @override
@@ -62,23 +66,23 @@ class Owner_details extends StatefulWidget {
 }
 
 class _Owner_detailsState extends State<Owner_details> {
-  List<String> tittle = ["Owner INFO", "SERVANTS", ""];
+  List<String> tittle = ["OWNER INFO", "DOCUMENTS", "FEILDS"];
   int? pageIndex=0;
 
-  Future<List<Servant>> fetchData1(num,id) async {
-    var url = Uri.parse('https://verifyserve.social/WebService2.asmx/Show_Documaintation_Servent_Tenents?owner_num=$num&id=$id');
-    final responce = await http.get(url);
-    if (responce.statusCode == 200) {
-      List listresponce = json.decode(responce.body);
-      return listresponce.map((data) => Servant.FromJson(data)).toList();
-    }
-    else {
-      throw Exception('Unexpected error occured!');
+  Future<List<TenantPdfModel>> fetchData1(O_num,T_num,subid) async {
+    var url = Uri.parse('https://verifyserve.social/WebService4.asmx/Verification_document_by_BothNumber_Subid?own_num=${O_num}&tenant_num=${T_num}&Subid=${subid}');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      //await Future.delayed(Duration(seconds: 1));
+      final List result = json.decode(response.body);
+      return result.map((e) => TenantPdfModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load data');
     }
   }
 
   Future<List<aaaa>> fetchData(id) async {
-    var url = Uri.parse('https://verifyserve.social/WebService1.asmx/Show_Documaintation_Byid?id=$id');
+    var url = Uri.parse('https://verifyserve.social/WebService4.asmx/Show_Verify_AddTenant_Under_Property_Table?TUP_id=${id}');
     final responce = await http.get(url);
     if (responce.statusCode == 200) {
       List listresponce = json.decode(responce.body);
@@ -485,150 +489,180 @@ class _Owner_detailsState extends State<Owner_details> {
           ),
           if(pageIndex == 1)const SizedBox(height: 10,),
           if(pageIndex == 1)Expanded(
-              child: FutureBuilder<List<Servant>>(
-                  future: fetchData1(widget.num,widget.iidd),
-                  builder: (context,snapshot){
-                    if(snapshot.connectionState == ConnectionState.waiting){
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    else if(snapshot.hasError){
-                      return Text('${snapshot.error}');
-                    }
-                    else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                      // If the list is empty, show an empty image
-                      return Center(
-                        child: Column(
-                          children: [
-                           // Lottie.asset("assets/images/no data.json",width: 450),
-                            Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),),
-                          ],
-                        ),
-                      );
-                    }
-                    else{
-                      return  ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          // itemCount: 1,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (BuildContext context,int len){
-                            return GestureDetector(
-
-                              onTap: () {
-
-                              },
-
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                    padding: const EdgeInsets.only(
-                                        top: 5, left: 5, right: 5, bottom: 5),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.6),
-                                      borderRadius: BorderRadius.circular(10),
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: // GestureDetector(
+                  //   onTap: ()async {
+                  //     final imageProvider =
+                  //         /*Image.network("http://www.verifyserve.social/upload/${data.first.addharcard}").image;*/
+                  //     Image.network("hhttps://verifyserve.social/upload/DJ.jpg"
+                  //     ).image;
+                  //     showImageViewer(context, imageProvider,
+                  //         onViewerDismissed: () {
+                  //           print("dismissed");
+                  //         });
+                  //   },
+                  //   child: ClipRRect(
+                  //     borderRadius: BorderRadius.circular(10),
+                  //     child: CachedNetworkImage(
+                  //       imageUrl:
+                  //       "https://verifyserve.social/upload/DJ.jpg",
+                  //
+                  //       height: 170,
+                  //       fit: BoxFit.cover,
+                  //       placeholder: (context, url) => Image.asset(
+                  //         AppImages.loading,
+                  //         height: 170,
+                  //         fit: BoxFit.cover,
+                  //       ),
+                  //       errorWidget: (context, error, stack) =>
+                  //           Image.asset(
+                  //             AppImages.imageNotFound,
+                  //             height: 170,
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(height: 20,),
+                  // GestureDetector(
+                  //   onTap: () async{
+                  //     final imageProvider =
+                  //         Image.network("https://verifyserve.social/upload/creta.jpg").image;
+                  //     showImageViewer(context, imageProvider,
+                  //         onViewerDismissed: () {
+                  //           print("dismissed");
+                  //         });
+                  //   },
+                  //   child: ClipRRect(
+                  //     borderRadius: BorderRadius.circular(10),
+                  //     child: CachedNetworkImage(
+                  //       imageUrl:
+                  //       "https://verifyserve.social/upload/creta.jpg",
+                  //
+                  //       height: 170,
+                  //       fit: BoxFit.cover,
+                  //       placeholder: (context, url) => Image.asset(
+                  //         AppImages.loading,
+                  //         height: 170,
+                  //         fit: BoxFit.cover,
+                  //       ),
+                  //       errorWidget: (context, error, stack) =>
+                  //           Image.asset(
+                  //             AppImages.imageNotFound,
+                  //             height: 170,
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(height: 20,),
+                  // GestureDetector(
+                  //   onTap: ()async  {
+                  //     final imageProvider =
+                  //         Image.network("https://verifyserve.social/upload/cook.jpg").image;
+                  //     showImageViewer(context, imageProvider,
+                  //       onViewerDismissed: () {
+                  //         print("dismissed");
+                  //       },
+                  //
+                  //     );
+                  //
+                  //   },
+                  //   child: ClipRRect(
+                  //     borderRadius: BorderRadius.circular(10),
+                  //     child: CachedNetworkImage(
+                  //       imageUrl:
+                  //       "https://verifyserve.social/upload/cook.jpg",
+                  //       height: 170,
+                  //       fit: BoxFit.cover,
+                  //       placeholder: (context, url) => Image.asset(
+                  //         AppImages.loading,
+                  //         height: 170,
+                  //         fit: BoxFit.cover,
+                  //       ),
+                  //       errorWidget: (context, error, stack) =>
+                  //           Image.asset(
+                  //             AppImages.imageNotFound,
+                  //             height: 170,
+                  //             fit: BoxFit.cover,
+                  //           ),
+                  //     ),
+                  //   ),
+                  // ),
+                  FutureBuilder<List<TenantPdfModel>>(
+                    future: fetchData1(widget.Owner_Num,widget.Tenant_num,widget.B_Subid),
+                    builder: (context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      else if(snapshot.hasError){
+                        return Text('${snapshot.error}');
+                      }
+                      else if (snapshot.data == null || snapshot.data!.isEmpty) {
+                        // If the list is empty, show an empty image
+                        return Center(
+                          child: Column(
+                            children: [
+                              //  Lottie.asset("assets/images/no data.json",width: 450),
+                              Center(child: Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),)),
+                            ],
+                          ),
+                        );
+                      }
+                      else{
+                        return Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: (){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PdfViewScreen(pdfPath: 'https://verifyserve.social/Done_Verification/${snapshot.data![index].documentPDF}'),
                                     ),
-                                    child: Column(
-                                      children: [
-
-                                        Container(
-                                          padding: const EdgeInsets.only(
-                                              top: 10, left: 10, right: 5, bottom: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.7),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                  );
+                                },
+                                child: Container(
+                                    padding: EdgeInsets.only(right: 10,left: 10,top: 10,bottom: 10),
+                                    child: Container(
+                                      padding: EdgeInsets.only(right: 15,left: 10,top: 15,bottom: 15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                                        border: Border.all(width: 1, color: Colors.grey),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          //Image(image: AssetImage('assets/images/history_icon.png'),width: 60),
+                                          Icon(PhosphorIcons.file_pdf,color: Colors.redAccent,),
+                                          SizedBox(width: 20,),
+                                          Column(
                                             mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              ClipRRect(
-                                                borderRadius: BorderRadius.circular(5),
-                                                child: Image(
-                                                  image: AssetImage('assets/images/image_not_found.png'),
-                                                  height: 75,
-                                                  width: 70,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-
-                                              const Spacer(),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    height: 15,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 100,
-                                                    child: Text('   '+snapshot.data![len].Servant_Name,
-                                                      //'hlo',
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.w500),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Text(
-                                                    '   +91 '+snapshot.data![len].Servant_Number,
-                                                    //'hlo',
-                                                    style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.white,
-                                                      // fontWeight: FontWeight.w500
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 130,
-                                                    child: Text(
-                                                      '   '+snapshot.data![len].Work_Timing,
-                                                      //'hlo',
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.white,
-                                                        // fontWeight: FontWeight.w500
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const Spacer(),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    snapshot.data![len].Servant_Work,
-                                                    //'hlo',
-                                                    style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.w700),),
-                                                ],
-                                              ),
+                                              SizedBox(
+                                                  width: 150,
+                                                  child: Text('${snapshot.data![index].documentname}',style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 1.5,overflow: TextOverflow.ellipsis),)),
                                             ],
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                            );
-
-                          });
-                    }
-                  }
-              ),
+                                          Spacer(),
+                                          Icon(PhosphorIcons.paperclip,color: Colors.white,)
+                                          // Image(image: AssetImage('assets/images/outgoing_arrow.png'),width: 20,color: Colors.greenAccent),
+                                        ],
+                                      ),
+                                    )
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ))
           ),
           if(pageIndex == 2)SizedBox(
             height: 20,

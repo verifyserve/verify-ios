@@ -585,7 +585,10 @@ class _RegisterState extends State<Register> {
                         // }
                         //bloc.register();
 
-                        if(_isEmailValid && _isPasswordValid){
+                        /*if(_isEmailValid && _isPasswordValid){
+                          bloc.register();*/
+                        if(_isEmailValid
+                        ){
                           bloc.register();
                         }else{
                           showTopSnackBar(

@@ -42,7 +42,11 @@ import '../About/about.dart';
 import '../coming_page.dart';
 import '../hotels/hotel_screen.dart';
 import '../insurance/insurance_main.dart';
+import '../profile/My_Documents.dart';
 import '../profile/profile.dart';
+import '../realEstate/Real-Estate_mainpage.dart';
+import '../realEstate/Real_Estate_New.dart';
+import '../realEstate/demo.dart';
 import '../truck & jcb/truck_screen.dart';
 import '../vehicle/Pages/newscreen.dart';
 import '../vehicle/SendParkingAlert.dart';
@@ -526,6 +530,47 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 20,
             ),
+
+            InkWell(
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute
+                      (builder: (context) => My_Documents())
+                );
+              },
+              child: Container(
+                child: const Row(
+                  children: [
+                    SizedBox(
+                      width: 15,
+                    ),
+                    // Icon(
+                    //   PhosphorIcons.browser,
+                    //   color: Colors.white,
+                    //   size: 20,
+                    // ),
+                    Image(image: AssetImage("assets/images/doc_.jpg"),width: 20,),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Documents",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+
             InkWell(
               onTap: (){
                 _launchURL();
@@ -559,6 +604,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               ),
             ),
+
             const SizedBox(
               height: 20,
             ),
@@ -720,7 +766,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const DocumentScreen()),
+                                              SliverListExample()),
 
                                     );
                                   }
@@ -730,8 +776,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               //const NotificationPage()),
-                                          //ComingSoon12()),
-                                          RealEstateHomepage()),
+                                          //RealEstateHomepage()),
+                                          ServicesScreen()),
+                                          //SliverListExample()),
                                     );
                                   }
                                   if (index == 2) {
@@ -748,8 +795,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                          //const VehicleHome()),
-                                          const ServicesScreen()),
+                                          const DocumentScreen()),
+                                          //const ServicesScreen()),
                                     );
 
                                   }

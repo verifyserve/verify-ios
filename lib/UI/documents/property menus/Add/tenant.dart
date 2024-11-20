@@ -1,14 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verify/UI/documents/document_screen.dart';
-
 import '../Main/ShowPropertyTenant.dart';
-import 'add_tenant_servant.dart';
 
 class TenantDetails extends StatefulWidget {
   const TenantDetails({super.key});
@@ -16,10 +13,7 @@ class TenantDetails extends StatefulWidget {
   @override
   State<TenantDetails> createState() => _TenantDetailsState();
 }
-
 class _TenantDetailsState extends State<TenantDetails> {
-
-
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   late SharedPreferences preferences;

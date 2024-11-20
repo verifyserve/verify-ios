@@ -5,6 +5,7 @@ import 'package:flutter_phosphor_icons/flutter_phosphor_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../../../data/model/doctenantSlider.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -19,16 +20,18 @@ class Catid {
   final String Tenant_Number;
   final String Tenant_Rented_Date;
   final String Tenant_Rented_Amount;
+  final String Subid;
 
   Catid(
-      {required this.id,required this.Tenant_Name, required this.Tenant_Number, required this.Tenant_Rented_Date, required this.Tenant_Rented_Amount});
+      {required this.id,required this.Tenant_Name, required this.Tenant_Number, required this.Tenant_Rented_Date, required this.Tenant_Rented_Amount, required this.Subid});
 
   factory Catid.FromJson(Map<String, dynamic>json){
-    return Catid(id: json['DTR_id'],
+    return Catid(id: json['TUP_id'],
         Tenant_Name: json['Tenant_Name'],
         Tenant_Number: json['Tenant_Number'],
         Tenant_Rented_Date: json['Tenant_Rented_Date'],
-        Tenant_Rented_Amount: json['Tenant_Rented_Amount']);
+        Tenant_Rented_Amount: json['Tenant_Rented_Amount'],
+        Subid: json['Subid']);
   }
 }
 
@@ -59,7 +62,7 @@ class ShowProperty extends StatefulWidget {
 
 class _ShowPropertyState extends State<ShowProperty> {
  // late DocumentationBloc bloc;
-  List<String> tittle = ["Show Tenant","Show Servant"];
+  List<String> tittle = ["Your Tenant"];
   int? pageIndex=0;
   List<String> gridImages = [
     AppImages.documents,
@@ -85,11 +88,15 @@ class _ShowPropertyState extends State<ShowProperty> {
       setState(() {
        // isLoading = false;
       });
+
     });
+
+    init();
+
   }
 
-  Future<List<Catid>> fetchData(id) async {
-    var url = Uri.parse("https://verifyserve.social/WebService2.asmx/Show_Tenants_Documaintation?id="+id);
+  Future<List<Catid>> fetchData(id, owner_num) async {
+    var url = Uri.parse("https://verifyserve.social/WebService4.asmx/show_RealEstate_by_subid_ownernumber?Owner_Number=$owner_num&Subid=$id");
     final responce = await http.get(url);
     if (responce.statusCode == 200) {
       List listresponce = json.decode(responce.body);
@@ -127,6 +134,16 @@ class _ShowPropertyState extends State<ShowProperty> {
     }
   }
 
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  late SharedPreferences preferences;
+  ValueNotifier<String>number=ValueNotifier("");
+
+
+  init()async {
+    preferences = await SharedPreferences.getInstance();
+    number.value = preferences.getString("phone") ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,7 +174,7 @@ class _ShowPropertyState extends State<ShowProperty> {
         children: [
           SizedBox(height: 15,),
 
-          FutureBuilder<List<DocumentTenantModel>>(
+          /*FutureBuilder<List<DocumentTenantModel>>(
             future: fetchCarouselData(widget.iidd),
             builder: (context, snapshot) {
 
@@ -220,7 +237,7 @@ class _ShowPropertyState extends State<ShowProperty> {
             },
           ),
           // bool isLoading = true;
-          const SizedBox(height: 20,),
+          const SizedBox(height: 20,),*/
 
           SizedBox(
             height: 40,
@@ -259,220 +276,225 @@ class _ShowPropertyState extends State<ShowProperty> {
           ),
           if(pageIndex == 0)
             Expanded(
-            child: FutureBuilder<List<Catid>>(
-                future: fetchData(widget.iidd),
-                builder: (context,abc){
-                  if(abc.connectionState == ConnectionState.waiting){
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  else if(abc.hasError){
-                    return Text('${abc.error}');
-                  }
-                  else if (abc.data == null || abc.data!.isEmpty) {
-                    // If the list is empty, show an empty image
-                    return Center(
-                      child: Column(
-                        children: [
-                          //Lottie.asset("assets/images/no data.json",width: 450),
-                          Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),),
-                        ],
-                      ),
-                    );
-                  }
-                  else{
-                    return ListView.builder(
-                        itemCount: abc.data!.length,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context,int len){
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => details(iidd: abc.data![len].id.toString())),
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 10),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                              child:  Container(
-                                                child: Image.asset(AppImages.tenantprofile,width: 140,height: 100,fit: BoxFit.fill),
-                                              ),
-                                            ),
-                                            // SizedBox(height: 5,),
-                                            // Container(
-                                            //   padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
-                                            //   decoration: BoxDecoration(
-                                            //     borderRadius: BorderRadius.circular(5),
-                                            //     border: Border.all(width: 1, color: Colors.green),
-                                            //     boxShadow: [
-                                            //       BoxShadow(
-                                            //           color: Colors.green.withOpacity(0.5),
-                                            //           blurRadius: 10,
-                                            //           offset: Offset(0, 0),
-                                            //           blurStyle: BlurStyle.outer
-                                            //       ),
-                                            //     ],
-                                            //   ),
-                                            //   child: Row(
-                                            //     children: [
-                                            //       Text(""+abc.data![len].type.toUpperCase(),
-                                            //         style: TextStyle(
-                                            //             fontSize: 12,
-                                            //             color: Colors.black,
-                                            //             fontWeight: FontWeight.w500,
-                                            //             letterSpacing: 0.5
-                                            //         ),
-                                            //       ),
-                                            //     ],
-                                            //   ),
-                                            // ),
-                                          ],
+            child: ValueListenableBuilder(
+                valueListenable: number,
+                builder: (context, String num,__) {
+                return FutureBuilder<List<Catid>>(
+                    future: fetchData(widget.iidd, num),
+                    builder: (context,abc){
+                      if(abc.connectionState == ConnectionState.waiting){
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      else if(abc.hasError){
+                        return Text('${abc.error}');
+                      }
+                      else if (abc.data == null || abc.data!.isEmpty) {
+                        // If the list is empty, show an empty image
+                        return Center(
+                          child: Column(
+                            children: [
+                              //Lottie.asset("assets/images/no data.json",width: 450),
+                              Text("No Data Found!",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white,fontFamily: 'Poppins',letterSpacing: 0),),
+                            ],
+                          ),
+                        );
+                      }
+                      else{
+                        return ListView.builder(
+                            itemCount: abc.data!.length,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context,int len){
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => details(iidd: abc.data![len].id.toString(), tenant_numm: abc.data![len].Tenant_Number.toString(), subbb_id: abc.data![len].Subid.toString())),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 15, left: 10, right: 10, bottom: 10),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(15),
                                         ),
-                                        SizedBox(width: 10,),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
-                                            Row(
+                                            Column(
                                               children: [
-                                                Icon(Iconsax.user_copy,size: 12,color: Colors.red,),
-                                                SizedBox(width: 2,),
-                                                Text("Tenant Name",
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.w600),
+                                                ClipRRect(
+                                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                                  child:  Container(
+                                                    child: Image.asset(AppImages.tenantprofile,width: 140,height: 100,fit: BoxFit.fill),
+                                                  ),
                                                 ),
+                                                // SizedBox(height: 5,),
+                                                // Container(
+                                                //   padding: EdgeInsets.only(left: 10,right: 10,top: 0,bottom: 0),
+                                                //   decoration: BoxDecoration(
+                                                //     borderRadius: BorderRadius.circular(5),
+                                                //     border: Border.all(width: 1, color: Colors.green),
+                                                //     boxShadow: [
+                                                //       BoxShadow(
+                                                //           color: Colors.green.withOpacity(0.5),
+                                                //           blurRadius: 10,
+                                                //           offset: Offset(0, 0),
+                                                //           blurStyle: BlurStyle.outer
+                                                //       ),
+                                                //     ],
+                                                //   ),
+                                                //   child: Row(
+                                                //     children: [
+                                                //       Text(""+abc.data![len].type.toUpperCase(),
+                                                //         style: TextStyle(
+                                                //             fontSize: 12,
+                                                //             color: Colors.black,
+                                                //             fontWeight: FontWeight.w500,
+                                                //             letterSpacing: 0.5
+                                                //         ),
+                                                //       ),
+                                                //     ],
+                                                //   ),
+                                                // ),
                                               ],
                                             ),
-                                            SizedBox(
-                                              width: 140,
-                                              child: Text(
-                                                abc.data![len].Tenant_Name.toUpperCase(),
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w400),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
+                                            SizedBox(width: 10,),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                Icon(Iconsax.mobile_copy,size: 12,color: Colors.red,),
-                                                SizedBox(width: 2,),
-                                                Text("Contact",
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.w600),
+                                                Row(
+                                                  children: [
+                                                    Icon(Iconsax.user_copy,size: 12,color: Colors.red,),
+                                                    SizedBox(width: 2,),
+                                                    Text("Tenant Name",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 2,
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                            Text('+91 '+abc.data![len].Tenant_Number,
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w400
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(Iconsax.calendar_1_copy,size: 12,color: Colors.red,),
-                                                SizedBox(width: 2,),
-                                                Text("Date",
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.w600),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 130,
-                                              child: Text(''+abc.data![len].Tenant_Rented_Date,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w400
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(Iconsax.money_3_copy,size: 12,color: Colors.red,),
-                                                SizedBox(width: 2,),
-                                                Text("Rent Amt.",
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 2,
-                                                  style: TextStyle(
-                                                      fontSize: 11,
-                                                      color: Colors.black,
-                                                      fontWeight: FontWeight.w600),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Icon(Icons.currency_rupee_rounded,size: 10,color: Colors.black),
                                                 SizedBox(
-                                                  width: 130,
-                                                  child: Text(''+abc.data![len].Tenant_Rented_Amount,
+                                                  width: 140,
+                                                  child: Text(
+                                                    abc.data![len].Tenant_Name.toUpperCase(),
                                                     overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
                                                         fontSize: 10,
-                                                        color: Colors.green,
-                                                        fontWeight: FontWeight.w500
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.w400),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(Iconsax.mobile_copy,size: 12,color: Colors.red,),
+                                                    SizedBox(width: 2,),
+                                                    Text("Contact",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 2,
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text('+91 '+abc.data![len].Tenant_Number,
+                                                  style: TextStyle(
+                                                      fontSize: 10,
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.w400
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(Iconsax.calendar_1_copy,size: 12,color: Colors.red,),
+                                                    SizedBox(width: 2,),
+                                                    Text("Date",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 2,
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 130,
+                                                  child: Text(''+abc.data![len].Tenant_Rented_Date,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                        fontSize: 11,
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.w400
                                                     ),
                                                   ),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(Iconsax.money_3_copy,size: 12,color: Colors.red,),
+                                                    SizedBox(width: 2,),
+                                                    Text("Rent Amt.",
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 2,
+                                                      style: TextStyle(
+                                                          fontSize: 11,
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.currency_rupee_rounded,size: 10,color: Colors.black),
+                                                    SizedBox(
+                                                      width: 130,
+                                                      child: Text(''+abc.data![len].Tenant_Rented_Amount,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: Colors.green,
+                                                            fontWeight: FontWeight.w500
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
 
-                        });
-                  }
-                }
+                            });
+                      }
+                    }
 
+                );
+              }
             ),
           ),
           if(pageIndex == 1)const SizedBox(height: 10,),

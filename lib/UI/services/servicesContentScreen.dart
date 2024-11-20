@@ -303,18 +303,18 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                       );
                     }
                   ),
-                  const SizedBox(height: 20,),
+                  const SizedBox(height: 10,),
 
-                  const Text(
+                  /*const Text(
                     "Your Preference (Optional)",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
-                  ),
+                  ),*/
 
-                  const SizedBox(height: 10,),
+                  //const SizedBox(height: 10,),
                   // ValueListenableBuilder(
                   //     valueListenable: dateIndex,
                   //     builder: (context,int time,_ ) {
@@ -360,7 +360,7 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                   // ),
                   // const SizedBox(height: 20,),
 
-                  Column(
+                  /*Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
@@ -398,7 +398,7 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                       //   Text(Months,style: TextStyle(color: Colors.white),)else if (isDailySelected)
                       //     Text(Days,style: TextStyle(color: Colors.white),)
                     ],
-                  ),
+                  ),*/
 
                   const SizedBox(height: 20,),
 
@@ -449,34 +449,7 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                     ),
                   ),
 
-                  // SizedBox(width: 10,),
-                  // InkWell(
-                  //     hoverColor: Colors.white,
-                  //     onTap: ()async {
-                  //
-                  //       double latitude = double.parse(long.replaceAll(RegExp(r'[^0-9.]'),''));
-                  //       double longitude = double.parse(lat.replaceAll(RegExp(r'[^0-9.]'),''));
-                  //
-                  //       placemarkFromCoordinates(latitude, longitude).then((placemarks) {
-                  //         var output = 'No results found.';
-                  //         if (placemarks.isNotEmpty) {
-                  //           output = placemarks.reversed.last.street.toString()+', '+placemarks.reversed.last.locality.toString()+', '
-                  //               +placemarks.reversed.last.subLocality.toString()+', '+placemarks.reversed.last.administrativeArea.toString()+', '
-                  //               +placemarks.reversed.last.subAdministrativeArea.toString()+', '+placemarks.reversed.last.country.toString()+', '
-                  //               +placemarks.reversed.last.postalCode.toString();
-                  //         }
-                  //
-                  //         setState(() {
-                  //           full_address = output;
-                  //
-                  //           _Address.text = full_address;
-                  //
-                  //           print('Your Current Address:- $full_address');
-                  //         });
-                  //       });
-                  //
-                  //     },
-                  //     child: Image.asset('assets/images/Homeaddress.png',height: 35,width:35,))
+
 
                   SizedBox(height: 5,),
 
@@ -662,7 +635,7 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                                 Location: dropdownValue,
                                 Longitude: _Longitude.text,
                                 Latitude: _Latitude.text,
-                                Type_of_requirement: '${isMonthlySelected ? 'For Month' : isDailySelected ? 'Only For A Day' : 'Nothing Selected'}',
+                                Type_of_requirement: 'Type_of_requirement'/*'${isMonthlySelected ? 'For Month' : isDailySelected ? 'Only For A Day' : 'Nothing Selected'}'*/,
                                 customer_name: _name,
                                 booking_time: '${currentDate.day}-${currentDate.month}-${currentDate.year}',
                                 customer_number: _numb
@@ -707,7 +680,7 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                     }
                   ),
                   const SizedBox(height: 10,),
-                  ValueListenableBuilder(
+                  /*ValueListenableBuilder(
                     valueListenable: bloc.mainGridLoader,
                     builder: (context, bool loading,__) {
                       if (loading == true) {
@@ -834,7 +807,7 @@ class _ServicesContentsScreenState extends State<ServicesContentsScreen> {
                         }
                       );
                     }
-                  ),
+                  ),*/
                 ],
               ),
             ),

@@ -137,6 +137,12 @@ class _ProfilePageState extends State<ProfilePage> {
       throw Exception('Could not launch $url');
     }
   }
+  _launchURL_one() async {
+    final Uri url = Uri.parse('https://theverify.in/contact.html');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   bool _isDeleting = false;
 
@@ -504,12 +510,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                         SizedBox(height: 15,),
                                         InkWell(
                                           onTap: (){
-                                            showTopSnackBar(
+                                            _launchURL_one();
+                                            /*showTopSnackBar(
                                               context,
                                               const CustomSnackBar.info(
                                                 message:
                                                 "Coming Soon",
-                                              ),);
+                                              ),);*/
                                           },
                                           child: Container(
                                             padding: EdgeInsets.only(left: 15,right: 18),

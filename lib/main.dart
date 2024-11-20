@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:verify/UI/auth/login.dart';
 import 'package:verify/UI/home/home_bar.dart';
 import 'package:verify/UI/splash/splash.dart';
+import 'package:verify/Uni_services/Context_Utility.dart';
+import 'package:verify/Uni_services/Uni_Service.dart';
 import 'package:verify/data/Notification/local_notification_service.dart';
 import 'package:verify/data/network/api_service.dart';
 import 'package:verify/data/network/interceptors.dart';
@@ -81,6 +83,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Uni_Services.init();
   LocalNotificationService.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -163,6 +166,7 @@ class _MyAppState extends State<MyApp> {
               return MediaQuery(
                 data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
                 child: MaterialApp(
+                  navigatorKey: ContextUtility.navigoterKey,
                   debugShowCheckedModeBanner: false,
                   theme: ThemeData(
                     fontFamily: 'Poppins', //'Lato', //'Gilroy',

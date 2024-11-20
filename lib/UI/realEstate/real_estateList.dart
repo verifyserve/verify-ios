@@ -61,7 +61,7 @@ class _RealEstateListState extends State<RealEstateList> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Provider.value(value: bloc,child: RealEstateDetail(id: "${widget.data[index].tPid}" ),)));
+             // Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Provider.value(value: bloc,child: RealEstateDetail(id: "${widget.data[index].tPid}" ),)));
             },
             child: Container(
               width: 1.sw,
@@ -79,7 +79,7 @@ class _RealEstateListState extends State<RealEstateList> {
                         borderRadius: const BorderRadius.all(Radius.circular(5)),
                         child:  CachedNetworkImage(
                           imageUrl:
-                          "http://www.verifyserve.social/upload/${widget.data[index].imagesh}",
+                          "http://www.verifyserve.social/${widget.data[index].imagesh}",
                           // height: 60.h,
                           // width: 120.w,
                           fit: BoxFit.cover,

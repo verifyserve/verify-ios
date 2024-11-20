@@ -4,14 +4,19 @@ class RealStateFilters {
   String? tital;
   String? locationh;
   String? priceh;
-  String? rname;
-  String? rtype;
-  String? filterlocation;
   String? bhk;
   String? shortdis;
   String? furnished;
-  String? speci;
   String? details;
+
+  String? Buy_Rent;
+  String? balcony;
+  String? Parking;
+  String? Lift;
+  String? Security_guard;
+  String? Goverment_meter;
+  String? CCTV;
+  String? Powerbackup;
 
   RealStateFilters(
       {this.tPid,
@@ -19,29 +24,37 @@ class RealStateFilters {
         this.tital,
         this.locationh,
         this.priceh,
-        this.rname,
-        this.rtype,
-        this.filterlocation,
         this.bhk,
         this.shortdis,
         this.furnished,
-        this.speci,
-        this.details});
+        this.details,
+        this.Buy_Rent,
+        this.balcony,
+        this.Parking,
+        this.Lift,
+        this.Security_guard,
+        this.Goverment_meter,
+        this.CCTV,
+        this.Powerbackup});
 
   RealStateFilters.fromJson(Map<String, dynamic> json) {
-    tPid = json['TPid'];
-    imagesh = json['Imagesh'];
-    tital = json['Tital'];
-    locationh = json['locationh'];
-    priceh = json['priceh'];
-    rname = json['Rname'];
-    rtype = json['Rtype'];
-    filterlocation = json['filterlocation'];
-    bhk = json['bhk'];
-    shortdis = json['shortdis'];
-    furnished = json['furnished'];
-    speci = json['speci'];
-    details = json['details'];
+    tPid = json['PVR_id'];
+    imagesh = json['Realstate_image'];
+    tital = json['Typeofproperty'];
+    locationh = json['Place_'];
+    priceh = json['Price'];
+    bhk = json['Bhk_Squarefit'];
+    shortdis = json['Building_information'];
+    furnished = json['Furnished'];
+    details = json['Details'];
+    Buy_Rent = json['Buy_Rent'];
+    balcony = json['balcony'];
+    Parking = json['Parking'];
+    Lift = json['Lift'];
+    Security_guard = json['Security_guard'];
+    Goverment_meter = json['Goverment_meter'];
+    CCTV = json['CCTV'];
+    Powerbackup = json['Powerbackup'];
   }
 
   Map<String, dynamic> toJson() {
@@ -51,14 +64,19 @@ class RealStateFilters {
     data['Tital'] = this.tital;
     data['locationh'] = this.locationh;
     data['priceh'] = this.priceh;
-    data['Rname'] = this.rname;
-    data['Rtype'] = this.rtype;
-    data['filterlocation'] = this.filterlocation;
     data['bhk'] = this.bhk;
     data['shortdis'] = this.shortdis;
     data['furnished'] = this.furnished;
-    data['speci'] = this.speci;
     data['details'] = this.details;
+
+    data['Buy_Rent'] = this.Buy_Rent;
+    data['balcony'] = this.balcony;
+    data['Parking'] = this.Parking;
+    data['Lift'] = this.Lift;
+    data['Security_guard'] = this.Security_guard;
+    data['Goverment_meter'] = this.Goverment_meter;
+    data['CCTV'] = this.CCTV;
+    data['Powerbackup'] = this.Powerbackup;
     return data;
   }
 }
